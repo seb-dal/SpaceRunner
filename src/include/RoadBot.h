@@ -5,6 +5,8 @@
 #include <math.h>
 #include "Utility.h"
 
+using namespace std;
+
 class RoadBot {
 private:
 	float rot, step;
@@ -12,77 +14,52 @@ private:
 	Point current_pos, goal_pos;
 	Vector current_dir;// XY, XZ, YZ
 
-	Point next() {
-		Point next(current_dir * step);
-		Vector goal_dir = GetAnglesBetween2Points(current_pos, goal_pos);
-        Vector next_dir = GetAnglesBetween2Points(current_pos, next);
-
-		Vector diff = goal_dir - next_dir;
-		if (length(diff) != 0) {
-
-			if (std::abs(diff.x) <= M_PI) {
-				if (goal_dir.x < next_dir.x) {
-					current_dir.x += std::min(rot, std::abs(diff.x));
-				}
-				else {
-					current_dir.x -= std::min(rot, std::abs(diff.x));
-				}
+	float r(Vector& diff, Vector& goal_dir, Vector& next_dir, int i) {
+		if (std::abs(diff(i)) <= M_PI) {
+			if (goal_dir(i) < next_dir(i)) {
+				return (std::min(rot, std::abs(diff(i))));
 			}
 			else {
-				if (goal_dir.x < next_dir.x) {
-					current_dir.x -= std::min(rot, std::abs(diff.x));
-				}
-				else {
-					current_dir.x += std::min(rot, std::abs(diff.x));
-				}
+				return -(std::min(rot, std::abs(diff(i))));
 			}
-
-			if (std::abs(diff.y) <= M_PI) {
-				if (goal_dir.y < next_dir.y) {
-					current_dir.y += std::min(rot, std::abs(diff.y));
-				}
-				else {
-					current_dir.y -= std::min(rot, std::abs(diff.y));
-				}
+		}
+		else {
+			if (goal_dir(i) < next_dir(i)) {
+				return  -(std::min(rot, std::abs(diff(i))));
 			}
 			else {
-				if (goal_dir.y < next_dir.y) {
-					current_dir.y -= std::min(rot, std::abs(diff.y));
-				}
-				else {
-					current_dir.y += std::min(rot, std::abs(diff.y));
-				}
-			}
-
-			if (std::abs(diff.z) <= M_PI) {
-				if (goal_dir.z < next_dir.z) {
-					current_dir.z += std::min(rot, std::abs(diff.z));
-				}
-				else {
-					current_dir.z -= std::min(rot, std::abs(diff.z));
-				}
-			}
-			else {
-				if (goal_dir.z < next_dir.z) {
-					current_dir.z -= std::min(rot, std::abs(diff.z));
-				}
-				else {
-					current_dir.z += std::min(rot, std::abs(diff.z));
-				}
+				return  (std::min(rot, std::abs(diff(i))));
 			}
 		}
 
-		current_pos = current_pos + current_dir * step;
+	}
 
+
+	Point next() {
+		Point next_pos(current_pos + Utility::cos(current_dir) * step);
+		Vector goal_dir = Utility::GetAnglesBetween2Points(current_pos, goal_pos);
+		Vector next_dir = Utility::GetAnglesBetween2Points(current_pos, next_pos);
+
+		//cout << "current_pos:" << current_pos << " next_pos:" << next_pos << " goal_pos:" << goal_pos << endl;
+		//cout << "current_dir:" << current_dir << " next_dir:" << next_dir << " goal_dir:" << goal_dir << endl;
+
+		Vector diff = goal_dir - next_dir;
+		if (length(diff) > 1) {
+			for (int i = 0; i < 3; i++)
+				current_dir(i) += r(diff, goal_dir, next_dir, i);
+		}
+
+		current_pos = current_pos + Utility::cos(current_dir) * step;
+		//cout << "POST current_dir:" << current_dir << endl << endl;
 		return current_pos;
 	}
 
 public:
-	RoadBot(float rotationBot, float stepBot, Point pos_init, Vector dir_init) :
+	RoadBot(float rotationBot, float stepBot, Point& pos_init, Vector& dir_init) :
 		rot(rotationBot), step(stepBot), current_pos(pos_init), current_dir(dir_init)
 	{}
 
-	void setNewGoal(Point goal) {
+	void setNewGoal(Point& goal) {
 		goal_pos = goal;
 	}
 
@@ -100,12 +77,22 @@ public:
 		while (!goal()) {
 
 			listP.emplace_back(next());
-			if (listP.size() > 5000)// avoid infinite loop memory allocation (RIP la RAM/PC)
+			if (listP.size() > 800)// avoid infinite loop memory allocation (RIP la RAM/PC)
 				return listP;
 		}
 		listP.emplace_back(goal_pos);
 		current_pos = goal_pos;
 
+		return listP;
+	}
+
+	std::vector<Point> getAllPointsToGoals(std::vector<Point>& list) {
+		std::vector<Point> listP;
+		for (Point& p : list) {
+			setNewGoal(p);
+			std::vector<Point> listPInter = getAllPointsToGoal();
+			listP.insert(listP.end(), listPInter.begin(), listPInter.end());
+		}
 		return listP;
 	}
 };
