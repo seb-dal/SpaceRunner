@@ -1,5 +1,5 @@
 #pragma once
-#include <runner/src/include/PointMesh.h>
+#include <runner/include/PointMesh.h>
 
 class PointMesh;
 class TriangleMesh {

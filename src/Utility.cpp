@@ -1,4 +1,4 @@
-#include "runner/src/include/Utility.h"
+#include "runner/include/Utility.h"
 
 /**
 * String value of a color.
@@ -95,30 +95,34 @@ void Utility::drawLine(Mesh& line, std::vector<Point>& listPoint) {
 	line.vertex(listPoint[listPoint.size() - 1]);
 }
 
-void Utility::buildPerpendicularVect(std::vector<Point>& listPoint, std::vector<Vector>& v) {
-	Vector vec(1, 0, 0);
-	vec = vec * getVector(listPoint[1], listPoint[0]);
 
-	float sizeTipe = 10;
-	v.push_back((vec)*sizeTipe); // list des transformations
+
+void Utility::buildPerpendicularVect(std::vector<Point>& listPoint, std::vector<Vector>& v, const Vector& init) {
+
+	v = std::vector<Vector>(listPoint.size());
+	Vector vec(init);
+	//vec = normalize(vec * getVector(listPoint[1], listPoint[0]));
+
+	v[0] = ((vec)); // list des transformations
 	for (size_t i = 1; i < listPoint.size() - 1; i++) {
-		Transform m = Rotation(
-			getVector(listPoint[i], listPoint[i - 1]),
-			getVector(listPoint[i + 1], listPoint[i])
+
+		vec = normalize(
+			Rotation(
+				getVector(listPoint[i], listPoint[i - 1]),
+				getVector(listPoint[i + 1], listPoint[i])
+			)(vec)
 		);
-		vec = m(vec);
-		v.push_back((vec)*sizeTipe);
+
+		v[i] = vec;
 	}
-	v.push_back((vec + (v[v.size() - 1] - v[v.size() - 2])) * sizeTipe);
+	v[v.size() - 1] = normalize(vec + v[v.size() - 2]);
 }
 
 /**
 * Draw a line with with a Vector parallele to the line
 */
 
-void Utility::drawLineWithVec(Mesh& line, std::vector<Point>& listPoint, std::vector<Vector>& v) {
-	buildPerpendicularVect(listPoint, v);
-
+void Utility::drawLineWithVec(Mesh& line, const std::vector<Point>& listPoint, const std::vector<Vector>& v) {
 	line.color(Red()).vertex(listPoint[0]);
 	line.color(Red()).vertex(listPoint[0] + v[0]);
 
@@ -140,7 +144,7 @@ void Utility::drawLineWithVec(Mesh& line, std::vector<Point>& listPoint, std::ve
 */
 
 void Utility::buildPipe(Mesh& quad, std::vector<Point>& listPoint, std::vector<Vector>& v, float sizePipe) {
-	buildPerpendicularVect(listPoint, v);
+	buildPerpendicularVect(listPoint, v, Vector(1, 0, 0));
 
 	std::vector<Color> mats; // listes des materiaux
 	int N = 16;
@@ -164,7 +168,7 @@ void Utility::buildPipe(Mesh& quad, std::vector<Point>& listPoint, std::vector<V
 		);
 	}
 
-	Pipe pipe = Pipe(N);
+	PipeBuilder pipe = PipeBuilder(N);
 	for (size_t i = 0; i < listPoint.size() - 1; i++) {
 		pipe.addCircule(
 			listPoint[i],
@@ -206,3 +210,56 @@ float Utility::randomf() {
 float Utility::randf(const float LO, const float HI) {
 	return LO + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HI - LO)));
 }
+
+Point Utility::rotAround(const Point& center, float size, const Vector& axis, const Vector& normal, float angle) {
+	return center + Scale(size)(Rotation(normalize(axis), angle)(normalize(normal)));
+}
+
+float Utility::GetT(const float t, const float alpha, const Vector& p0, const Vector& p1) {
+	auto d = p1 - p0;
+	float a = dot(d, d); // Dot product
+	float b = std::pow(a, alpha * .5f);
+	return (b + t);
+}
+
+float Utility::lerp(float a, float b, float t) {
+	return a + t * (b - a);
+}
+
+Vector Utility::CatMullRom(const Vector& p0, const Vector& p1, const Vector& p2, const Vector& p3, float t, float alpha) {
+	float t0 = 0.0f;
+	float t1 = GetT(t0, alpha, p0, p1);
+	float t2 = GetT(t1, alpha, p1, p2);
+	float t3 = GetT(t2, alpha, p2, p3);
+	t = lerp(t1, t2, t);
+	Vector A1 = (t1 - t) / (t1 - t0) * p0 + (t - t0) / (t1 - t0) * p1;
+	Vector A2 = (t2 - t) / (t2 - t1) * p1 + (t - t1) / (t2 - t1) * p2;
+	Vector A3 = (t3 - t) / (t3 - t2) * p2 + (t - t2) / (t3 - t2) * p3;
+	Vector B1 = (t2 - t) / (t2 - t0) * A1 + (t - t0) / (t2 - t0) * A2;
+	Vector B2 = (t3 - t) / (t3 - t1) * A2 + (t - t1) / (t3 - t1) * A3;
+	Vector C = (t2 - t) / (t2 - t1) * B1 + (t - t1) / (t2 - t1) * B2;
+	return C;
+}
+
+Transform Utility::modelOnPipe(Pipeline* pipe, const float position, const float heightOnPipe, const float rotation, const Vector forwardObj) {
+	Transform model = Translation(
+		Vector(rotAround(
+			pipe->getPosition(position),
+			heightOnPipe,
+			pipe->getAxe(position),
+			pipe->getNormal(position),
+			rotation
+		))
+	);
+	model = model(Rotation(
+		pipe->getAxe(position),
+		rotation
+	));
+	model = model(Rotation(
+		forwardObj,
+		pipe->getAxe(position)
+	));
+
+	return model;
+}
+

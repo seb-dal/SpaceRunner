@@ -21,6 +21,8 @@ protected:
 	}
 
 public:
+	Camera() {}
+
 	/**
 	 * Création d'une camera simple.
 	 *
@@ -35,6 +37,18 @@ public:
 		const float fov,
 		const float znear, const float zfar
 	) :fov(fov), height(height), width(width), znear(std::max(0.1f, znear)), zfar(std::max(1.f, zfar)) {
+		projection(fov, width / height, znear, zfar);
+	}
+
+	/**
+	 * .
+	 *
+	 * \param width
+	 * \param height
+	 */
+	void setRatio(const int width, const int height) {
+		this->width = width;
+		this->height = height;
 		projection(fov, width / height, znear, zfar);
 	}
 
@@ -69,14 +83,14 @@ public:
 	 * \param up Vecteur de rotation autour de l'axe entre "from" et "to"
 	 */
 	void lookAt(const Point& from, const Point& to, const Vector& up) {
-		cam = Lookat(from, to, up);
+		cam = Lookat(from, to, normalize(up));
 	}
 
-	Transform get_Projection() {
+	Transform& get_Projection() {
 		return proj;
 	}
 
-	Transform get_Camera() {
+	Transform& get_Camera() {
 		return cam;
 	}
 };

@@ -1,21 +1,24 @@
-#include "runner/src/include/PointMesh.h"
+#include "runner/include/PointMesh.h"
 
 PointMesh::PointMesh(Point& coord) :p(coord) {}
 
 Vector PointMesh::getNormalMoy() {
 	Vector res;
-	for (TriangleMesh* t : inTriangles) {
+	for (int i = 0; i < inTriangles.size(); i++) {
 		res = res + Utility::perpendicular_Vector_Triangle(
-			Vector(t->p1->getPoint()),
-			Vector(t->p2->getPoint()),
-			Vector(t->p3->getPoint())
+			Vector(inTriangles[i]->p1->getPoint()),
+			Vector(inTriangles[i]->p2->getPoint()),
+			Vector(inTriangles[i]->p3->getPoint())
 		);
 	}
 	return normalize(res);
 }
 
 void PointMesh::addTriangle(TriangleMesh* t) {
-	inTriangles.push_back(t);
+	//#pragma omp critical
+	{
+		inTriangles.push_back(t);
+	}
 }
 
 Point PointMesh::getPoint() { return p; }

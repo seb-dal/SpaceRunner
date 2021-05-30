@@ -9,8 +9,11 @@
 #include "draw.h"        // pour dessiner du point de vue d'une camera
 #include <stdio.h>
 #include <vector>
-#include "Pipe.h"
 #include <materials.h>
+#include <cmath>
+#include <runner/include/Pipeline.h>
+
+class Pipeline;
 
 class Utility {
 	Utility() {};
@@ -61,12 +64,12 @@ public:
 	 */
 	static void drawLine(Mesh& line, std::vector<Point>& listPoint);
 
-	static void buildPerpendicularVect(std::vector<Point>& listPoint, std::vector<Vector>& v);
+	static void buildPerpendicularVect(std::vector<Point>& listPoint, std::vector<Vector>& v, const Vector& init);
 
 	/**
 	 * Draw a line with with a Vector parallele to the line
 	 */
-	static void drawLineWithVec(Mesh& line, std::vector<Point>& listPoint, std::vector<Vector>& v);
+	static void drawLineWithVec(Mesh& line, const std::vector<Point>& listPoint, const std::vector<Vector>& v);
 
 	/**
 	* Build and draw a pipe.
@@ -77,12 +80,44 @@ public:
 	*Random value between -1 and 1
 	*/
 	static float randf();
-
 	static float randomf();
 
+	/**
+	 * Random float.
+	 *
+	 * \param LO lower part
+	 * \param HI higher part
+	 * \return
+	 */
 	static float randf(const float LO, const float HI);
 
-	static Point rotAround(const Point& center, float size, const Vector& axis, const Vector& v, float angle) {
-		return center + size * Rotation(axis, angle)(v);
-	}
+	/**
+	 * Get a point that rotate around another point.
+	 *
+	 * \param center center
+	 * \param size space between the center ans the point
+	 * \param axis
+	 * \param v
+	 * \param angle
+	 * \return
+	 */
+	static Point rotAround(const Point& center, float size, const Vector& axis, const Vector& v, float angle);
+
+	static float GetT(const float t, const float alpha, const Vector& p0, const Vector& p1);
+
+	static float lerp(float a, float b, float t);
+
+	static Vector CatMullRom(const Vector& p0, const Vector& p1, const Vector& p2, const Vector& p3, float t /* between 0 and 1 */, float alpha = .5f /* between 0 and 1 */);
+
+	/**
+	 * .
+	 *
+	 * \param pipe
+	 * \param position
+	 * \param heightOnPipe
+	 * \param rotation
+	 * \param forwardObj
+	 * \return
+	 */
+	static Transform modelOnPipe(Pipeline* pipe, const float position, const float heightOnPipe, const float rotation, const Vector forwardObj);
 };

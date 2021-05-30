@@ -11,21 +11,20 @@
 #include <stdio.h>
 #include <vector>
 #include <app.h>
-#include <build/Player.h>
-#include <runner/src/include/Camera.h>
+#include <thread>
+#include <runner/include/Player.h>
+#include <runner/include/Camera.h>
+#include <runner/include/Pipeline.h>
 
 
 class App_Runner : public App {
-	const float sizePipe = 8;
+	const float sizePipe = 50;
+	const float zoom = 2;
 
-	float rotationCircule = 0;
-	const float vitesseRot = 1;
+	Pipeline* tuyau;
+	std::thread thread_PipeBuilder;
 
-	Mesh objet;
-	Orbiter cam2;
-	Camera camera;
-
-	Player play;
+	Player player;
 
 	std::vector<Point> subPoint;
 	std::vector<Vector> v;

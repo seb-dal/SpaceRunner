@@ -2,8 +2,8 @@
 #include <src/gKit/vec.h>
 #include <src/gKit/color.h>
 #include <vector>
-#include <runner/src/include/Utility.h>
-#include <runner/src/include/TriangleMesh.h>
+#include <runner/include/Utility.h>
+#include <runner/include/TriangleMesh.h>
 
 class TriangleMesh;
 class PointMesh {
