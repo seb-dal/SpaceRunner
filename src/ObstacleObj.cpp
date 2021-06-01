@@ -16,6 +16,9 @@ ObstacleObj::ObstacleObj(MeshLoader& loader, Transform& T) {
 	Bonus_HitBox = Box(HitBox);
 
 	HitBox.T = HitBox.T(Scale(scale_CollisionBox));
+	int r = rand() % 4;
+	HitBox.T = HitBox.T(RotationY(90 * r));
+
 	Bonus_HitBox.T = Bonus_HitBox.T(Scale(scale_collsionBoxBonus));
 }
 

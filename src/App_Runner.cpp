@@ -96,7 +96,13 @@ int App_Runner::quit() {
 
 
 
-
+static void rotationBonus(std::vector<BonusObj*>& list_B) {
+	for (int i = 0; i < list_B.size(); i++) {
+		if (!list_B[i]->haveBeenTaken()) {
+			list_B[i]->Rotate(Vector(1, 0, 1), 7.5);
+		}
+	}
+}
 
 
 
@@ -122,8 +128,14 @@ int App_Runner::update(const float time, const float delta) {
 	// Delete part if requested
 	tuyau->deleteLastPart();
 
+	rotationBonus(tuyau->getPart()[0]->getBonus());
+	rotationBonus(tuyau->getPart()[1]->getBonus());
+	rotationBonus(tuyau->getPart()[2]->getBonus());
+	rotationBonus(tuyau->getPart()[3]->getBonus());
+
 	// Collsion of the player with other box
 	collision();
+
 
 
 	// Score text 
@@ -162,7 +174,7 @@ int App_Runner::render() {
 		std::vector<BonusObj*> list_B = p->getBonus();
 		for (int i = 0; i < list_B.size(); i++) {
 			if (!list_B.at(i)->haveBeenTaken()) {
-				drawer.draw(player.getCamera(), *list_B.at(i)->getMeshObject(), list_B.at(i)->getHitBox().T, *list_B.at(i)->getTriangleGroupe());
+				drawer.draw(player.getCamera(), *list_B.at(i)->getMeshObject(), list_B.at(i)->getModel(), *list_B.at(i)->getTriangleGroupe());
 			}
 		}
 		//draw(*nbPartCreated->get(), Identity(), camera.get_Camera(), camera.get_Projection());
@@ -210,9 +222,13 @@ void App_Runner::collision() {
 
 	detectCollision_Obstacles(player, play, &scoreValue, tuyau->getPart()[0]->getObstacles());
 	detectCollision_Obstacles(player, play, &scoreValue, tuyau->getPart()[1]->getObstacles());
+	detectCollision_Obstacles(player, play, &scoreValue, tuyau->getPart()[2]->getObstacles());
+	detectCollision_Obstacles(player, play, &scoreValue, tuyau->getPart()[3]->getObstacles());
 
 	detectCollsion_Bonus(player, play, &scoreValue, tuyau->getPart()[0]->getBonus());
 	detectCollsion_Bonus(player, play, &scoreValue, tuyau->getPart()[1]->getBonus());
+	detectCollsion_Bonus(player, play, &scoreValue, tuyau->getPart()[2]->getBonus());
+	detectCollsion_Bonus(player, play, &scoreValue, tuyau->getPart()[3]->getBonus());
 }
 
 

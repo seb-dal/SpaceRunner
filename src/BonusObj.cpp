@@ -1,7 +1,7 @@
 #include "runner/include/BonusObj.h"
 
-const float BonusObj::scale_collsionBoxBonus = 1.6;
-
+const float BonusObj::scale_collsionBoxBonus = 2.2;
+const float BonusObj::scale_model = 1.6;
 
 BonusObj::BonusObj(MeshLoader& loader, Transform& T) {
 	object = &loader.Bonus;
@@ -12,6 +12,8 @@ BonusObj::BonusObj(MeshLoader& loader, Transform& T) {
 
 	HitBox = Box(pmin, pmax);
 	HitBox.T = T;
+
+	ModelMesh = HitBox.T(Scale(scale_model));
 
 	HitBox.T = HitBox.T(Scale(scale_collsionBoxBonus));
 
@@ -24,4 +26,12 @@ void BonusObj::take() {
 
 bool BonusObj::haveBeenTaken() {
 	return taken;
+}
+
+Transform& BonusObj::getModel() {
+	return ModelMesh;
+}
+
+void BonusObj::Rotate(const Vector& v, const float angle) {
+	ModelMesh = ModelMesh(Rotation(v, angle));
 }
