@@ -13,7 +13,7 @@ public:
 private:
 	static const float scale_collsionBoxBonus;
 	static const float scale_CollisionBox;
-
+	static const float scale_model;
 
 	//==============================
 	Box Bonus_HitBox;

@@ -6,15 +6,15 @@ Viewer::Viewer(const int width, const int height) :App(width, height) {
 }
 
 int Viewer::init() {
-	init_cube();
-	init_cylinder();
+	//init_cube();
+	//init_cylinder();
 	return 0;
 }
 
 int Viewer::quit() {
-	m_cube.release();
-	m_cylinder.release();
-	m_cylinder_cover.release();
+	//m_cube.release();
+	//m_cylinder.release();
+	//m_cylinder_cover.release();
 
 	return 0;
 }

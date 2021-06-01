@@ -95,7 +95,11 @@ int App_Runner::quit() {
 
 
 
-
+/**
+ * Rotate the bonus box.
+ *
+ * \param list_B list of Bonus box
+ */
 static void rotationBonus(std::vector<BonusObj*>& list_B) {
 	for (int i = 0; i < list_B.size(); i++) {
 		if (!list_B[i]->haveBeenTaken()) {
@@ -128,10 +132,12 @@ int App_Runner::update(const float time, const float delta) {
 	// Delete part if requested
 	tuyau->deleteLastPart();
 
-	rotationBonus(tuyau->getPart()[0]->getBonus());
-	rotationBonus(tuyau->getPart()[1]->getBonus());
-	rotationBonus(tuyau->getPart()[2]->getBonus());
-	rotationBonus(tuyau->getPart()[3]->getBonus());
+	//Animation Bonus Box
+	std::vector<Pipeline_Part_CMR*> parts = tuyau->getPart();
+	rotationBonus(parts[0]->getBonus());
+	rotationBonus(parts[1]->getBonus());
+	rotationBonus(parts[2]->getBonus());
+	rotationBonus(parts[3]->getBonus());
 
 	// Collsion of the player with other box
 	collision();
@@ -167,7 +173,7 @@ int App_Runner::render() {
 
 		std::vector<ObstacleObj*> list_O = p->getObstacles();
 		for (int i = 0; i < list_O.size(); i++) {
-			drawer.draw(player.getCamera(), *list_O.at(i)->getMeshObject(), list_O.at(i)->getHitBox().T, *list_O.at(i)->getTriangleGroupe());
+			drawer.draw(player.getCamera(), *list_O.at(i)->getMeshObject(), list_O.at(i)->getModel(), *list_O.at(i)->getTriangleGroupe());
 		}
 
 
@@ -187,7 +193,14 @@ int App_Runner::render() {
 	return 1;
 }
 
-
+/**
+ * Detect Collision with obstacle (Bonus + Collision).
+ *
+ * \param player player object
+ * \param play collision box of the player
+ * \param scoreValue pointer to ScoreValue
+ * \param list_C list of Obstacle
+ */
 static void detectCollision_Obstacles(Player& player, Box& play, float* scoreValue, std::vector<ObstacleObj*>& list_C) {
 	for (int i = 0; i < list_C.size(); i++) {
 		if (play.collides(list_C[i]->getBonusHitBox())) {
@@ -204,6 +217,14 @@ static void detectCollision_Obstacles(Player& player, Box& play, float* scoreVal
 	}
 }
 
+/**
+ * Detect collision with Bonus Box.
+ *
+ * \param player player object
+ * \param play collision box of the player
+ * \param scoreValue pointer to ScoreValue
+ * \param list_B list of Bonus box
+ */
 static void detectCollsion_Bonus(Player& player, Box& play, float* scoreValue, std::vector<BonusObj*>& list_B) {
 	for (int i = 0; i < list_B.size(); i++) {
 		if (!list_B[i]->haveBeenTaken()) {
@@ -220,15 +241,17 @@ static void detectCollsion_Bonus(Player& player, Box& play, float* scoreValue, s
 void App_Runner::collision() {
 	Box play = player.getCollision();
 
-	detectCollision_Obstacles(player, play, &scoreValue, tuyau->getPart()[0]->getObstacles());
-	detectCollision_Obstacles(player, play, &scoreValue, tuyau->getPart()[1]->getObstacles());
-	detectCollision_Obstacles(player, play, &scoreValue, tuyau->getPart()[2]->getObstacles());
-	detectCollision_Obstacles(player, play, &scoreValue, tuyau->getPart()[3]->getObstacles());
+	std::vector<Pipeline_Part_CMR*> parts = tuyau->getPart();
 
-	detectCollsion_Bonus(player, play, &scoreValue, tuyau->getPart()[0]->getBonus());
-	detectCollsion_Bonus(player, play, &scoreValue, tuyau->getPart()[1]->getBonus());
-	detectCollsion_Bonus(player, play, &scoreValue, tuyau->getPart()[2]->getBonus());
-	detectCollsion_Bonus(player, play, &scoreValue, tuyau->getPart()[3]->getBonus());
+	detectCollision_Obstacles(player, play, &scoreValue, parts[0]->getObstacles());
+	detectCollision_Obstacles(player, play, &scoreValue, parts[1]->getObstacles());
+	detectCollision_Obstacles(player, play, &scoreValue, parts[2]->getObstacles());
+	detectCollision_Obstacles(player, play, &scoreValue, parts[3]->getObstacles());
+
+	detectCollsion_Bonus(player, play, &scoreValue, parts[0]->getBonus());
+	detectCollsion_Bonus(player, play, &scoreValue, parts[1]->getBonus());
+	detectCollsion_Bonus(player, play, &scoreValue, parts[2]->getBonus());
+	detectCollsion_Bonus(player, play, &scoreValue, parts[3]->getBonus());
 }
 
 

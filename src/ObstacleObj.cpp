@@ -1,8 +1,8 @@
 #include "runner/include/ObstacleObj.h"
 
 const float ObstacleObj::scale_collsionBoxBonus = 2.6;
-const float ObstacleObj::scale_CollisionBox = 1.3;
-
+const float ObstacleObj::scale_CollisionBox = 1.1;
+const float ObstacleObj::scale_model = 1.3;
 
 ObstacleObj::ObstacleObj(MeshLoader& loader, Transform& T) {
 	object = &loader.Obstacle;
@@ -14,6 +14,8 @@ ObstacleObj::ObstacleObj(MeshLoader& loader, Transform& T) {
 	HitBox = Box(pmin, pmax);
 	HitBox.T = T;
 	Bonus_HitBox = Box(HitBox);
+
+	ModelMesh = HitBox.T(Scale(scale_model));
 
 	HitBox.T = HitBox.T(Scale(scale_CollisionBox));
 	int r = rand() % 4;

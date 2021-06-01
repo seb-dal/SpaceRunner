@@ -18,6 +18,13 @@ public:
 
 	void removeFirst();
 
+
+	/**
+	 * Draw the pipe in a mesh.
+	 * 
+	 * \param obj Mesh
+	 * \param v list of color
+	 */
 	void drawPipe(Mesh& obj, std::vector<Color>& v);
 
 	/**

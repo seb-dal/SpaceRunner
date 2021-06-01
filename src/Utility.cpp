@@ -253,7 +253,7 @@ Transform Utility::modelOnPipe(Pipeline* pipe, const float position, const float
 	);
 
 	model = model(Rotation(
-		pipe->getAxe(position),
+		normalize(pipe->getAxe(position)),
 		rotation
 	));
 
@@ -261,6 +261,7 @@ Transform Utility::modelOnPipe(Pipeline* pipe, const float position, const float
 		normalize(forwardObj),
 		normalize(pipe->getAxe(position))
 	));
+
 
 	return model;
 }

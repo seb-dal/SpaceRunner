@@ -13,7 +13,7 @@ Pipeline::Pipeline(MeshLoader& loader, int sizePipe, unsigned int N) :sizePipe(s
 		std::cos(C + (4.0f / 3.0f) * M_PI)
 		)
 		);*/
-		mats.push_back(
+		listMaterialColor.push_back(
 			Color(
 				0.5 * std::cos(C / 2),
 				0,//std::cos(C),
@@ -27,10 +27,15 @@ Pipeline::Pipeline(MeshLoader& loader, int sizePipe, unsigned int N) :sizePipe(s
 	listesPointsCourbures.push_back(new Point(0, 0, 0));
 	listesPointsCourbures.push_back(new Point(10 * sizePipe, 10 * sizePipe, 10 * sizePipe));
 
-	//v = Vector(1, -1, 1);
-	Vector vec(1, 0, 0);
-	v = normalize(cross(vec, Utility::getVector(*listesPointsCourbures[1], *listesPointsCourbures[0])));
+	Vector vec(1, 1, -1);
 
+	if (length(normalize(vec) + normalize(Utility::getVector(*listesPointsCourbures[1], *listesPointsCourbures[0]))) == 0) {
+		Vector vec = Vector(0, 0, 1);
+		lastNormal = normalize(cross(vec, Utility::getVector(*listesPointsCourbures[1], *listesPointsCourbures[0])));
+	}
+	else {
+		lastNormal = normalize(cross(vec, Utility::getVector(*listesPointsCourbures[1], *listesPointsCourbures[0])));
+	}
 
 
 	for (int i = 0; i < 20; i++) {
@@ -47,7 +52,7 @@ Pipeline::~Pipeline() {
 		delete listesPointsCourbures.at(i);
 	}
 
-	mats.clear();
+	listMaterialColor.clear();
 }
 
 
@@ -67,11 +72,11 @@ void Pipeline::addNewPart(MeshLoader& loader) {
 		listesPointsCourbures.at(id - 3),
 		listesPointsCourbures.at(id - 2),
 		listesPointsCourbures.at(id - 1),
-		v, sizePipe, N, mats, nbPartCreated
+		lastNormal, sizePipe, N, listMaterialColor, nbPartCreated
 	);
 
 	std::vector<Vector> vv = part->getV();
-	v = vv.at(vv.size() - 1);
+	lastNormal = vv.at(vv.size() - 1);
 	nbPartCreated++;
 	parts.push_back(part);
 

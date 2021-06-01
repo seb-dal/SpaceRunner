@@ -28,10 +28,6 @@ bool BonusObj::haveBeenTaken() {
 	return taken;
 }
 
-Transform& BonusObj::getModel() {
-	return ModelMesh;
-}
-
 void BonusObj::Rotate(const Vector& v, const float angle) {
 	ModelMesh = ModelMesh(Rotation(v, angle));
 }

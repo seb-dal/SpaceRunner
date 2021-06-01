@@ -31,6 +31,7 @@ void Player::action(float fps, Pipeline* pipe) {
 	vitesse = std::min(vitMax, vitesse + (60 / fps) * (0.01f / (1000000 * vitesse * vitesse)));
 
 	camera.setRatio(window_width(), window_height());
+
 	camera.lookAt(
 		Utility::rotAround(
 			pipe->getPosition(pos),

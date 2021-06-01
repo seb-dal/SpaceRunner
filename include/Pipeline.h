@@ -19,9 +19,9 @@ class Pipeline {
 	int requestDeleteNB = 0;
 
 
+	std::vector<Color> listMaterialColor;
 
-	std::vector<Color> mats;
-	Vector v;
+	Vector lastNormal;
 public:
 	/**
 	 * .
@@ -52,14 +52,43 @@ public:
 	void requestDelete();
 
 
+	/**
+	 * Get the radius of the pipe.
+	 *
+	 * \return
+	 */
 	float getSizePipe();
 
+
+	/**
+	 * Get the position of the center of the pipe.
+	 *
+	 * \param pos position on the pipe
+	 * \return center of the pipe at the given position
+	 */
 	Point getPosition(float pos);
 
+	/**
+	 * Get normal of the pipe at the given position.
+	 *
+	 * \param pos position on the pipe
+	 * \return Vector normal
+	 */
 	Vector getNormal(float pos);
 
+	/**
+	 * Get all part of the pipe.
+	 *
+	 * \return list of part of the pipe
+	 */
 	std::vector<Pipeline_Part_CMR*>& getPart();
 
+	/**
+	 * Get axis of the pipe at the given position.
+	 *
+	 * \param pos position on the pipe
+	 * \return vector axis
+	 */
 	Vector getAxe(float pos);
 
 };

@@ -44,6 +44,10 @@ public:
 	virtual int update(const float time, const float delta);
 	virtual int render();
 
+	/**
+	 * Detect all kind of collsion.
+	 * Used in update.
+	 */
 	void collision();
 
 };

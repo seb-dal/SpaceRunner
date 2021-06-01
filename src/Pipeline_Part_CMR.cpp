@@ -1,7 +1,5 @@
 #include "runner/include/Pipeline_Part_CMR.h"
 
-#include <omp.h>
-
 const float Pipeline_Part_CMR::NB_POINTS = 100;
 
 Pipeline_Part_CMR::Pipeline_Part_CMR(
@@ -75,6 +73,9 @@ Pipeline_Part_CMR::Pipeline_Part_CMR(
 Pipeline_Part_CMR::~Pipeline_Part_CMR() {
 	list_Obstacle.clear();
 	list_Bonus.clear();
+
+	v.clear();
+	listPoints.clear();
 
 	fragment->release();
 	delete fragment;

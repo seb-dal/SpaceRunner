@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <src/gKit/mesh.h>
-#include <box-intersection-etu/box.hpp>
+#include <runner/include/box.hpp>
 #include <runner/include/MeshLoader.h>
 
 
@@ -14,9 +14,14 @@ public:
 	Mesh* getMeshObject();
 	std::vector<TriangleGroup>* getTriangleGroupe();
 
+	Transform& getModel();
+
 protected:
 
+	Transform ModelMesh;
+
 	Box HitBox;
+
 	Mesh* object;
 	std::vector<TriangleGroup>* groups_Obj;
 };

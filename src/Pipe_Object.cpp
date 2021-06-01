@@ -11,3 +11,7 @@ Mesh* Pipe_Object::getMeshObject() {
 std::vector<TriangleGroup>* Pipe_Object::getTriangleGroupe() {
 	return groups_Obj;
 }
+
+Transform& Pipe_Object::getModel() {
+	return ModelMesh;
+}

@@ -3,7 +3,7 @@
 #include <src/gKit/vec.h>
 #include <src/gKit/mesh.h>
 #include <runner/include/PipeBuilder.h>
-#include <box-intersection-etu/box.hpp>
+#include <runner/include/box.hpp>
 #include <runner/include/ObstacleObj.h>
 #include <runner/include/BonusObj.h>
 
@@ -26,16 +26,17 @@ public:
 	static const float NB_POINTS;
 
 	/**
-	 * .
-	 * \param prevPrev
-	 * \param prev
-	 * \param start
-	 * \param end
-	 * \param after
-	 * \param v
-	 * \param sizePipe
-	 * \param N
-	 * \param mats
+	 * Create a new part of the pipe.
+	 *
+	 * \param prevPrev preview preview point
+	 * \param prev preview
+	 * \param start start coubre point
+	 * \param end  end courbe point
+	 * \param after point after
+	 * \param v last normal of the pipe
+	 * \param sizePipe radius of the pipe
+	 * \param N number of points per circule
+	 * \param mats list color material
 	 */
 	Pipeline_Part_CMR(
 		const Point* prevPrev,
@@ -45,7 +46,7 @@ public:
 	);
 
 	/**
-	 * delete.
+	 * delete part.
 	 */
 	~Pipeline_Part_CMR();
 
