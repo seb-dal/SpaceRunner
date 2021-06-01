@@ -215,7 +215,7 @@ Point Utility::rotAround(const Point& center, float size, const Vector& axis, co
 	return center + Scale(size)(Rotation(normalize(axis), angle)(normalize(normal)));
 }
 
-float Utility::GetT(const float t, const float alpha, const Vector& p0, const Vector& p1) {
+float Utility::GetT(const float t, const float alpha, const Point& p0, const Point& p1) {
 	auto d = p1 - p0;
 	float a = dot(d, d); // Dot product
 	float b = std::pow(a, alpha * .5f);
@@ -226,18 +226,18 @@ float Utility::lerp(float a, float b, float t) {
 	return a + t * (b - a);
 }
 
-Vector Utility::CatMullRom(const Vector& p0, const Vector& p1, const Vector& p2, const Vector& p3, float t, float alpha) {
+Point Utility::CatMullRom(const Point& p0, const Point& p1, const Point& p2, const Point& p3, float t, float alpha) {
 	float t0 = 0.0f;
 	float t1 = GetT(t0, alpha, p0, p1);
 	float t2 = GetT(t1, alpha, p1, p2);
 	float t3 = GetT(t2, alpha, p2, p3);
 	t = lerp(t1, t2, t);
-	Vector A1 = (t1 - t) / (t1 - t0) * p0 + (t - t0) / (t1 - t0) * p1;
-	Vector A2 = (t2 - t) / (t2 - t1) * p1 + (t - t1) / (t2 - t1) * p2;
-	Vector A3 = (t3 - t) / (t3 - t2) * p2 + (t - t2) / (t3 - t2) * p3;
-	Vector B1 = (t2 - t) / (t2 - t0) * A1 + (t - t0) / (t2 - t0) * A2;
-	Vector B2 = (t3 - t) / (t3 - t1) * A2 + (t - t1) / (t3 - t1) * A3;
-	Vector C = (t2 - t) / (t2 - t1) * B1 + (t - t1) / (t2 - t1) * B2;
+	Point A1 = (t1 - t) / (t1 - t0) * p0 + (t - t0) / (t1 - t0) * p1;
+	Point A2 = (t2 - t) / (t2 - t1) * p1 + (t - t1) / (t2 - t1) * p2;
+	Point A3 = (t3 - t) / (t3 - t2) * p2 + (t - t2) / (t3 - t2) * p3;
+	Point B1 = (t2 - t) / (t2 - t0) * A1 + (t - t0) / (t2 - t0) * A2;
+	Point B2 = (t3 - t) / (t3 - t1) * A2 + (t - t1) / (t3 - t1) * A3;
+	Point C = (t2 - t) / (t2 - t1) * B1 + (t - t1) / (t2 - t1) * B2;
 	return C;
 }
 
@@ -251,13 +251,15 @@ Transform Utility::modelOnPipe(Pipeline* pipe, const float position, const float
 			rotation
 		))
 	);
+
 	model = model(Rotation(
 		pipe->getAxe(position),
 		rotation
 	));
+
 	model = model(Rotation(
-		forwardObj,
-		pipe->getAxe(position)
+		normalize(forwardObj),
+		normalize(pipe->getAxe(position))
 	));
 
 	return model;

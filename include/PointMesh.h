@@ -19,6 +19,8 @@ public:
 	Color getColor();
 	void setColor(Color col);
 
+	void clear();
+
 	void draw(Mesh& obj);
 
 private:

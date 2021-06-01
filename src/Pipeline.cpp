@@ -1,8 +1,6 @@
 #include "runner/include/Pipeline.h"
 
-Pipeline::Pipeline(int sizePipe, unsigned int N) :sizePipe(sizePipe), N(N) {
-	Obstacle = read_mesh("runner/data/Piece3.obj");
-	group = Obstacle.groups();
+Pipeline::Pipeline(MeshLoader& loader, int sizePipe, unsigned int N) :sizePipe(sizePipe), N(N) {
 
 	float L = 8.0f;
 	float X = (float)N / L;
@@ -29,10 +27,14 @@ Pipeline::Pipeline(int sizePipe, unsigned int N) :sizePipe(sizePipe), N(N) {
 	listesPointsCourbures.push_back(new Point(0, 0, 0));
 	listesPointsCourbures.push_back(new Point(10 * sizePipe, 10 * sizePipe, 10 * sizePipe));
 
-	v = Vector(1, -1, 1);
+	//v = Vector(1, -1, 1);
+	Vector vec(1, 0, 0);
+	v = normalize(cross(vec, Utility::getVector(*listesPointsCourbures[1], *listesPointsCourbures[0])));
+
+
 
 	for (int i = 0; i < 20; i++) {
-		addNewPart();
+		addNewPart(loader);
 	}
 }
 
@@ -51,7 +53,7 @@ Pipeline::~Pipeline() {
 
 
 
-void Pipeline::addNewPart() {
+void Pipeline::addNewPart(MeshLoader& loader) {
 	listesPointsCourbures.push_back(new Point(
 		listesPointsCourbures.at(listesPointsCourbures.size() - 1)->x + sizePipe * 20.f,
 		listesPointsCourbures.at(listesPointsCourbures.size() - 1)->y + sizePipe * Utility::randf(-10, 10),
@@ -72,11 +74,9 @@ void Pipeline::addNewPart() {
 	v = vv.at(vv.size() - 1);
 	nbPartCreated++;
 	parts.push_back(part);
-	if (nbPartCreated > 5) {
-		Point pmin, pmax;
-		Obstacle.bounds(pmin, pmax);
 
-		part->genColision(this, 2, pmin, pmax);
+	if (nbPartCreated > 10) {
+		part->genColision(loader, this, 2, 1);
 	}
 }
 
@@ -93,6 +93,8 @@ void Pipeline::deleteLastPart() {
 
 		delete p;
 		delete f;
+
+		//play.decreasePos(Pipeline_Part_CMR::NB_POINTS);
 		posR += Pipeline_Part_CMR::NB_POINTS;
 	}
 }
@@ -149,8 +151,3 @@ Vector Pipeline::getAxe(float pos) {
 	));
 }
 
-Mesh& Pipeline::getObstacleMesh() { return Obstacle; }
-
-std::vector<TriangleGroup>& Pipeline::getTriangleGroupeObstacle() {
-	return group;
-}

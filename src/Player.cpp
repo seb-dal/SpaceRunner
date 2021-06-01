@@ -1,10 +1,13 @@
 #include "runner/include/Player.h"
 
-Player::Player(const float sizePipe, const float zoom) {
+const float Player::vitesseRot = 2.5;
+const float Player::vitMax = 1.5;
+
+Player::Player(MeshLoader& loader, const float sizePipe, const float zoom) {
 	camera = Camera(window_width(), window_height(), 70, sizePipe * (5 / zoom), sizePipe * (400 / zoom));
 
-	object = read_mesh("runner/data/Piece1.obj");
-	groups = object.groups();
+	object = loader.Play;
+	groups = loader.groups_Play;
 
 	Point pmin, pmax;
 	object.bounds(pmin, pmax);
@@ -22,9 +25,10 @@ void Player::action(float fps, Pipeline* pipe) {
 	if (key_state(SDLK_RIGHT) || key_state(SDLK_d))
 		rotationCircule = std::fmod(rotationCircule - vitesseRot * (60 / fps) + 360, 360);
 
-	if (key_state(SDLK_UP) || key_state(SDLK_z))
-		pos += vitesse * (60 / fps);
 
+	//if (key_state(SDLK_UP) || key_state(SDLK_z))
+	pos += vitesse * (60 / fps);
+	vitesse = std::min(vitMax, vitesse + (60 / fps) * (0.01f / (1000000 * vitesse * vitesse)));
 
 	camera.setRatio(window_width(), window_height());
 	camera.lookAt(
@@ -75,6 +79,10 @@ void Player::action(float fps, Pipeline* pipe) {
 
 float Player::getPos() { return pos; }
 
+/*void Player::decreasePos(const float dec) {
+	pos -= dec;
+}*/
+
 Camera& Player::getCamera() { return camera; }
 
 Mesh& Player::getObject() { return object; }
@@ -87,5 +95,9 @@ std::vector<TriangleGroup>& Player::getGroupeTriangle() {
 
 Box Player::getCollision() {
 	return colision;
+}
+
+void Player::stopSpeed() {
+	vitesse = 0;
 }
 

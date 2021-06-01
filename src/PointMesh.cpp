@@ -27,6 +27,10 @@ Color PointMesh::getColor() { return c; }
 
 void PointMesh::setColor(Color col) { c = col; }
 
+void PointMesh::clear() {
+	inTriangles.clear();
+}
+
 void PointMesh::draw(Mesh& obj) {
 	obj.color(c);
 	if (!inTriangles.empty())

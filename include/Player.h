@@ -7,10 +7,10 @@
 #include <src/gKit/wavefront.h>
 #include <src/gKit/window.h>
 
+
 class Player {
 	float rotationCircule = 0;
-	const float vitesseRot = 1;
-	const float vitesse = 1;
+	float vitesse = 0;
 	float pos = 10;
 
 	Mesh object;
@@ -24,13 +24,19 @@ class Player {
 
 
 public:
-	Player(const float sizePipe, const float zoom);
+	static const float vitesseRot;
+	static const float vitMax;
+
+
+	Player(MeshLoader& loader, const float sizePipe, const float zoom);
 
 	~Player();
 
 	void action(float fps, Pipeline* pipe);
 
 	float getPos();
+
+	//void decreasePos(const float dec);
 
 	Camera& getCamera();
 
@@ -41,5 +47,11 @@ public:
 	std::vector<TriangleGroup>& getGroupeTriangle();
 
 	Box getCollision();
+
+	/**
+	 * Decrease the speed of the player to 0.
+	 *
+	 */
+	void stopSpeed();
 };
 

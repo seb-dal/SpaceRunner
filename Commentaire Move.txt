@@ -1,0 +1,41 @@
+// etape 1 : charger un objet
+	//objet= read_mesh("data/flat_bbox.obj");
+	//Mesh line(GL_TRIANGLES); // MODE ligne (2 points)
+
+	/*std::vector<Point> listPoint;
+	listPoint.push_back(Point(0, 0, 0));
+	listPoint.push_back(Point(100, 100, 100));
+	for (int i = 0; i < 3; i++) {
+		listPoint.push_back(Point(
+			listPoint.at(listPoint.size() - 1).x + sizePipe * 20.f,
+			listPoint.at(listPoint.size() - 1).y + sizePipe * Utility::randf(-20, 20),
+			listPoint.at(listPoint.size() - 1).z + sizePipe * Utility::randf(-20, 20)
+		));
+	}*/
+	//drawLine(line, listPoint);
+	//std::cout<< <<std::endl;
+	//RoadBot rb(0.01f, 0.8f, Point(0, 0, 0), Vector(1, 0, 0));
+
+
+	//subPoint = Utility::subdivisionPoint(listPoint, 8);
+	/*for (int i = 1; i < subPoint.size() - 1; i++) {
+		std::cout << GetAnglesBetween2Points(subPoint[i - 1], subPoint[i]) << std::endl;
+	}*/
+
+	//Utility::drawLineWithVec(line, subPoint, v);
+	//Utility::buildPipe(line, subPoint, v, sizePipe);
+
+	//============================================================================
+	//objet = line;
+	// etape 2 : creer une camera pour observer l'objet
+	// construit l'englobant de l'objet, les extremites de sa boite englobante
+	//Point pmin, pmax;
+	//objet.bounds(pmin, pmax);
+
+	// regle le point de vue de la camera pour observer l'objet
+	//cam2.lookat(pmin, pmax);
+
+	//cam2.translation(0.4, -0.4);
+
+
+

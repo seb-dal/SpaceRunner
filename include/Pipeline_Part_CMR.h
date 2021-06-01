@@ -4,6 +4,8 @@
 #include <src/gKit/mesh.h>
 #include <runner/include/PipeBuilder.h>
 #include <box-intersection-etu/box.hpp>
+#include <runner/include/ObstacleObj.h>
+#include <runner/include/BonusObj.h>
 
 class Pipeline;
 
@@ -14,12 +16,15 @@ class Pipeline_Part_CMR {
 	Mesh* fragment;
 	unsigned int N;
 
-	std::vector<Box*> list_colision;
+	std::vector<ObstacleObj*> list_Obstacle;
+	std::vector<BonusObj*> list_Bonus;
+
 
 	std::vector<Vector> v;
 	std::vector<Point> listPoints;
 public:
 	static const float NB_POINTS;
+
 	/**
 	 * .
 	 * \param prevPrev
@@ -51,8 +56,9 @@ public:
 	 */
 	Mesh* get();
 
-	std::vector<Box*>& getColision();
+	std::vector<ObstacleObj*>& getObstacles();
 
+	std::vector<BonusObj*>& getBonus();
 	/**
 	 * get Points.
 	 */
@@ -71,6 +77,6 @@ public:
 	 * \param pmin
 	 * \param pmax
 	 */
-	void genColision(Pipeline* pipe, unsigned int nbColision, Point pmin, Point pmax);
+	void genColision(MeshLoader& loader, Pipeline* pipe, unsigned int nbColision, unsigned int nbBonus);
 };
 

@@ -17,13 +17,13 @@ Pipeline_Part_CMR::Pipeline_Part_CMR(
 	listPoints = std::vector<Point>(NB_POINTS + 2);
 
 	listPoints[0] = (
-		Point(Utility::CatMullRom(Vector(*prevPrev), Vector(*prev), Vector(*start), Vector(*end), (float)(NB_POINTS - 1) / (float)NB_POINTS))
-		+ Point(Utility::CatMullRom(Vector(*prev), Vector(*start), Vector(*end), Vector(*after), 0))
+		Point(Utility::CatMullRom(*prevPrev, *prev, *start, *end, (float)(NB_POINTS - 1) / (float)NB_POINTS))
+		+ Point(Utility::CatMullRom(*prev, *start, *end, *after, 0))
 		) / 2;
 
 	//#pragma omp parallel for
 	for (int i = 1; i < listPoints.size(); i++) {
-		listPoints[i] = Point(Utility::CatMullRom(Vector(*prev), Vector(*start), Vector(*end), Vector(*after), (float)(i - 1) / (float)NB_POINTS));
+		listPoints[i] = Point(Utility::CatMullRom(*prev, *start, *end, *after, (float)(i - 1) / (float)NB_POINTS));
 	}
 
 	//std::cout << Point(Utility::CatMullRom(Vector(*prevPrev), Vector(*prev), Vector(*start), Vector(*end), 1)) << " " << Point(Utility::CatMullRom(Vector(*prev), Vector(*start), Vector(*end), Vector(*after), 0)) << std::endl;
@@ -73,9 +73,8 @@ Pipeline_Part_CMR::Pipeline_Part_CMR(
 
 
 Pipeline_Part_CMR::~Pipeline_Part_CMR() {
-	for (int i = 0; i < list_colision.size(); i++) {
-		delete list_colision[i];
-	}
+	list_Obstacle.clear();
+	list_Bonus.clear();
 
 	fragment->release();
 	delete fragment;
@@ -87,7 +86,9 @@ Pipeline_Part_CMR::~Pipeline_Part_CMR() {
 
 Mesh* Pipeline_Part_CMR::get() { return fragment; }
 
-std::vector<Box*>& Pipeline_Part_CMR::getColision() { return list_colision; }
+std::vector<ObstacleObj*>& Pipeline_Part_CMR::getObstacles() { return list_Obstacle; }
+
+std::vector<BonusObj*>& Pipeline_Part_CMR::getBonus() { return list_Bonus; }
 
 std::vector<Point>& Pipeline_Part_CMR::getPoints() { return listPoints; }
 
@@ -97,28 +98,41 @@ std::vector<Vector>& Pipeline_Part_CMR::getV() { return v; }
 
 
 
-void Pipeline_Part_CMR::genColision(Pipeline* pipe, unsigned int nbColision, Point pmin, Point pmax) {
+void Pipeline_Part_CMR::genColision(MeshLoader& loader, Pipeline* pipe, unsigned int nbColision, unsigned int nbBonus) {
 	if (nbColision > 0) {
 
 		float pp = (NB_POINTS - 4) / ((float)(nbColision));
-		list_colision = std::vector<Box*>(nbColision);
+		list_Obstacle = std::vector<ObstacleObj*>(nbColision);
+		list_Bonus = std::vector<BonusObj*>(nbBonus);
 
-		for (int i = 0; i < list_colision.size(); i++) {
+		for (int i = 0; i < list_Obstacle.size(); i++) {
 			float a = Utility::randf(0, 360);
 			float p = Utility::randf(pp * i, pp * (i + 1));
 
-			Box* c = new Box(pmin, pmax);
-
-			c->T = Utility::modelOnPipe(
+			Transform T = Utility::modelOnPipe(
 				pipe,
 				NumPart * NB_POINTS + p,
-				sizePipe * -1,
+				sizePipe * 0.7,
 				a,
 				Vector(-1, 0, 0)
 			);
-			c->T = c->T(Scale(0.5));
 
-			list_colision[i] = c;
+			list_Obstacle[i] = new ObstacleObj(loader, T);
+		}
+
+		for (int i = 0; i < list_Bonus.size(); i++) {
+			float a = Utility::randf(0, 360);
+			float p = Utility::randf(pp * i, pp * (i + 1));
+
+			Transform T = Utility::modelOnPipe(
+				pipe,
+				NumPart * NB_POINTS + p,
+				sizePipe * 1.6,
+				a,
+				Vector(1, 1, 1)
+			);
+
+			list_Bonus[i] = new BonusObj(loader, T);
 		}
 	}
 }

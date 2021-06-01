@@ -103,11 +103,11 @@ public:
 	 */
 	static Point rotAround(const Point& center, float size, const Vector& axis, const Vector& v, float angle);
 
-	static float GetT(const float t, const float alpha, const Vector& p0, const Vector& p1);
+	static float GetT(const float t, const float alpha, const Point& p0, const Point& p1);
 
 	static float lerp(float a, float b, float t);
 
-	static Vector CatMullRom(const Vector& p0, const Vector& p1, const Vector& p2, const Vector& p3, float t /* between 0 and 1 */, float alpha = .5f /* between 0 and 1 */);
+	static Point CatMullRom(const Point& p0, const Point& p1, const Point& p2, const Point& p3, float t /* between 0 and 1 */, float alpha = .5f /* between 0 and 1 */);
 
 	/**
 	 * .

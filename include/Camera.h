@@ -49,7 +49,7 @@ public:
 	void setRatio(const int width, const int height) {
 		this->width = width;
 		this->height = height;
-		projection(fov, width / height, znear, zfar);
+		projection(fov, this->width / this->height, znear, zfar);
 	}
 
 	/**

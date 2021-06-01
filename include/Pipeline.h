@@ -5,6 +5,8 @@
 #include <runner/include/Pipeline_Part_CMR.h>
 
 class Pipeline_Part_CMR;
+class MeshLoader;
+
 class Pipeline {
 	const float sizePipe;
 	const unsigned int N;
@@ -17,8 +19,6 @@ class Pipeline {
 	int requestDeleteNB = 0;
 
 
-	Mesh Obstacle;
-	std::vector<TriangleGroup> group;
 
 	std::vector<Color> mats;
 	Vector v;
@@ -29,7 +29,7 @@ public:
 	 * \param sizePipe
 	 * \param N
 	 */
-	Pipeline(int sizePipe, unsigned int N);
+	Pipeline(MeshLoader& loader, int sizePipe, unsigned int N);
 
 	~Pipeline();
 
@@ -37,7 +37,7 @@ public:
 	 * Ajoute une nouvelle parti.
 	 *
 	 */
-	void addNewPart();
+	void addNewPart(MeshLoader& loader);
 
 	/**
 	 * Supprimer la dernier partie / point.
@@ -62,8 +62,5 @@ public:
 
 	Vector getAxe(float pos);
 
-	Mesh& getObstacleMesh();
-
-	std::vector<TriangleGroup>& getTriangleGroupeObstacle();
 };
 

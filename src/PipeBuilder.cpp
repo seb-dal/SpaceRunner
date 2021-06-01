@@ -99,6 +99,7 @@ void PipeBuilder::drawPipe(Mesh& obj, std::vector<Color>& v) {
 		delete t;
 	}
 	for (std::map<std::string, PointMesh*>::iterator it = listPoint.begin(); it != listPoint.end(); ++it) {
+		it->second->clear();
 		delete it->second;
 	}
 }

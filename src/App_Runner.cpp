@@ -3,25 +3,29 @@
 #include <runner/include/Utility.h>
 #include <runner/include/FPS.h>
 #include <runner/include/Drawing.h>
+#include <runner/include/Pipe_Object.h>
 
 
 App_Runner::App_Runner(const int width, const int height)
-	:App(width, height),
-	player(Player(sizePipe, zoom))
+	:Viewer(width, height),
+	loader(),
+	player(Player(loader, sizePipe, zoom))
 {
-	init_cylinder();
 	srand(time(NULL));
-	tuyau = new Pipeline(sizePipe, 32);
+	tuyau = new Pipeline(loader, sizePipe, 32);
 }
+
+
 
 static float posCreate = 100;
 static bool continuCreate = true;
-static void createPartIfNeeded(Player& player, Pipeline* tuyau) {
+
+static void createPartIfNeeded(Player& player, Pipeline* tuyau, MeshLoader& loader) {
 	do {
 		if (player.getPos() - posCreate > Pipeline_Part_CMR::NB_POINTS / 2) {
 			try {
 				posCreate += Pipeline_Part_CMR::NB_POINTS;
-				tuyau->addNewPart();
+				tuyau->addNewPart(loader);
 				tuyau->requestDelete();
 				std::cout << "New part created" << std::endl;
 			}
@@ -33,52 +37,20 @@ static void createPartIfNeeded(Player& player, Pipeline* tuyau) {
 			//std::cout << "No part created" << std::endl;
 		//std::cout << player.getPos() << "  " << posCreate << std::endl;
 	} while (continuCreate);
+	return;
 }
 
 
 
 int App_Runner::init() {
+	Viewer::init();
 
-	thread_PipeBuilder = std::thread(createPartIfNeeded, std::ref(player), std::ref(tuyau));
+	score = create_text();
 
-	// etape 1 : charger un objet
-	//objet= read_mesh("data/flat_bbox.obj");
-	//Mesh line(GL_TRIANGLES); // MODE ligne (2 points)
-
-	/*std::vector<Point> listPoint;
-	listPoint.push_back(Point(0, 0, 0));
-	listPoint.push_back(Point(100, 100, 100));
-	for (int i = 0; i < 3; i++) {
-		listPoint.push_back(Point(
-			listPoint.at(listPoint.size() - 1).x + sizePipe * 20.f,
-			listPoint.at(listPoint.size() - 1).y + sizePipe * Utility::randf(-20, 20),
-			listPoint.at(listPoint.size() - 1).z + sizePipe * Utility::randf(-20, 20)
-		));
-	}*/
-	//drawLine(line, listPoint);
-	//std::cout<< <<std::endl;
-	//RoadBot rb(0.01f, 0.8f, Point(0, 0, 0), Vector(1, 0, 0));
+	//Create thread to create and request delete part of the pipe
+	thread_PipeBuilder = std::thread(createPartIfNeeded, std::ref(player), std::ref(tuyau), std::ref(loader));
 
 
-	//subPoint = Utility::subdivisionPoint(listPoint, 8);
-	/*for (int i = 1; i < subPoint.size() - 1; i++) {
-		std::cout << GetAnglesBetween2Points(subPoint[i - 1], subPoint[i]) << std::endl;
-	}*/
-
-	//Utility::drawLineWithVec(line, subPoint, v);
-	//Utility::buildPipe(line, subPoint, v, sizePipe);
-
-	//============================================================================
-	//objet = line;
-	// etape 2 : creer une camera pour observer l'objet
-	// construit l'englobant de l'objet, les extremites de sa boite englobante
-	//Point pmin, pmax;
-	//objet.bounds(pmin, pmax);
-
-	// regle le point de vue de la camera pour observer l'objet
-	//cam2.lookat(pmin, pmax);
-
-	//cam2.translation(0.4, -0.4);
 
 	// etat openGL par defaut
 	//glClearColor(0.2f, 0.2f, 0.2f, 1.f);        // couleur par defaut de la fenetre
@@ -100,15 +72,32 @@ int App_Runner::init() {
 
 
 int App_Runner::quit() {
+	Viewer::quit();
+
 	// etape 3 : detruire la description du triangle
-	//objet.release();
-	//delete tuyau;
 	continuCreate = false;
-	//thread_PipeBuilder.join();
-	tuyau->getObstacleMesh().release();
+
+	loader.release();
+
 	player.getObject().release();
+
+	if (thread_PipeBuilder.joinable())
+		thread_PipeBuilder.join();
+
+	release_text(score);
+
 	return 0;   // ras, pas d'erreur
 }
+
+
+
+
+
+
+
+
+
+
 
 
 /**
@@ -116,26 +105,32 @@ int App_Runner::quit() {
 	@Param delta temps depuis l'image precedante (en ms)
 */
 int App_Runner::update(const float time, const float delta) {
-	float fps = FPS::getFPS(delta);
-	std::cout << "time:" << time << "  delta:" << delta << "  FPS:" << fps << "\n";
+	float fps = 60;
 
+	// Prevent Jump when delta too big
+	if (delta < 1000) {
+		fps = FPS::getFPS(delta);
+	}
+
+	//std::cout << "time:" << time << "  delta:" << delta << "  FPS:" << fps << "\n";
+
+	scoreValue += delta / 100.f;
+
+	// Player Action
 	player.action(fps, tuyau);
 
+	// Delete part if requested
 	tuyau->deleteLastPart();
 
-	std::vector<Box*> collisionPart1 = tuyau->getPart()[0]->getColision();
-	std::vector<Box*> collisionPart2 = tuyau->getPart()[1]->getColision();
-	Box play = player.getCollision();
-	for (Box* b : collisionPart1) {
-		if (play.collides(*b)) {
-			std::cout << "Colision" << std::endl;
-		}
-	}
-	for (Box* b : collisionPart2) {
-		if (play.collides(*b)) {
-			std::cout << "Colision" << std::endl;
-		}
-	}
+	// Collsion of the player with other box
+	collision();
+
+
+	// Score text 
+	clear(score);
+	std::string textScore = "Score: ";
+	textScore.append(std::to_string((int)scoreValue));
+	print(score, 70, 1, textScore.c_str());
 
 	return 0;
 }
@@ -156,93 +151,72 @@ int App_Runner::render() {
 	//draw(objet, Transform(), camera.get_Camera(), camera.get_Projection());
 	for (Pipeline_Part_CMR* p : tuyau->getPart()) {
 		drawer.draw(player.getCamera(), *p->get(), Identity());
-		std::vector<Box*> listC = p->getColision();
 
-		for (int i = 0; i < listC.size(); i++) {
-			drawer.draw(player.getCamera(), tuyau->getObstacleMesh(), listC[i]->T, tuyau->getTriangleGroupeObstacle());
+
+		std::vector<ObstacleObj*> list_O = p->getObstacles();
+		for (int i = 0; i < list_O.size(); i++) {
+			drawer.draw(player.getCamera(), *list_O.at(i)->getMeshObject(), list_O.at(i)->getHitBox().T, *list_O.at(i)->getTriangleGroupe());
+		}
+
+
+		std::vector<BonusObj*> list_B = p->getBonus();
+		for (int i = 0; i < list_B.size(); i++) {
+			if (!list_B.at(i)->haveBeenTaken()) {
+				drawer.draw(player.getCamera(), *list_B.at(i)->getMeshObject(), list_B.at(i)->getHitBox().T, *list_B.at(i)->getTriangleGroupe());
+			}
 		}
 		//draw(*nbPartCreated->get(), Identity(), camera.get_Camera(), camera.get_Projection());
 	}
 
 	drawer.draw(player.getCamera(), player.getObject(), player.getObjModel(), player.getGroupeTriangle());
 
+	draw(score, window_width(), window_height());
 
 	return 1;
 }
 
 
-
-
-
-
-
-
-void App_Runner::init_cylinder()
-{
-	int i;
-	const int div = 25;
-	float alpha;
-	float step = 2.0 * M_PI / (div);
-
-	m_cylinder = Mesh(GL_TRIANGLE_STRIP);
-
-	for (i = 0; i <= div; ++i)
-	{
-		alpha = i * step;
-		m_cylinder.normal(Vector(cos(alpha), 0, sin(alpha)));
-		m_cylinder.texcoord(float(i) / div, 0.f);
-		m_cylinder.vertex(Point(cos(alpha), 0, sin(alpha)));
-
-		m_cylinder.normal(Vector(cos(alpha), 0, sin(alpha)));
-		m_cylinder.texcoord(float(i) / div, 1.f);
-		m_cylinder.vertex(Point(cos(alpha), 1, sin(alpha)));
-	}
-
-	m_cylinder_cover = Mesh(GL_TRIANGLE_FAN);
-
-	m_cylinder_cover.normal(Vector(0, 1, 0));
-
-	m_cylinder_cover.vertex(Point(0, 0, 0));
-	for (i = 0; i <= div; ++i)
-	{
-		alpha = -i * step;
-		m_cylinder_cover.vertex(Point(cos(alpha), 0, sin(alpha)));
+static void detectCollision_Obstacles(Player& player, Box& play, float* scoreValue, std::vector<ObstacleObj*>& list_C) {
+	for (int i = 0; i < list_C.size(); i++) {
+		if (play.collides(list_C[i]->getBonusHitBox())) {
+			if (play.collides(list_C[i]->getHitBox())) {
+				std::cout << "Colision" << std::endl;
+				player.stopSpeed();
+				*scoreValue = 0;
+			}
+			else {
+				std::cout << "Bonus Close" << std::endl;
+				*scoreValue += 100;
+			}
+		}
 	}
 }
 
-void App_Runner::draw_cylinder(const Transform& T)
-{
-	draw(m_cylinder, T, player.getCamera().get_Camera(), player.getCamera().get_Projection());
-
-	Transform Tch = T * Translation(0, 1, 0);
-	draw(m_cylinder, Tch, player.getCamera().get_Camera(), player.getCamera().get_Projection());
-
-	//Transform Tcb = T  * Translation( 0, -1, 0);
-	Transform Tcb = T * Translation(0, 0, 0) * Rotation(Vector(1, 0, 0), 180);
-	draw(m_cylinder, Tcb, player.getCamera().get_Camera(), player.getCamera().get_Projection());
+static void detectCollsion_Bonus(Player& player, Box& play, float* scoreValue, std::vector<BonusObj*>& list_B) {
+	for (int i = 0; i < list_B.size(); i++) {
+		if (!list_B[i]->haveBeenTaken()) {
+			if (play.collides(list_B[i]->getHitBox())) {
+				list_B[i]->take();
+				std::cout << "Bonus Block" << std::endl;
+				*scoreValue += 250;
+			}
+		}
+	}
 }
 
 
-void App_Runner::draw_cylinder(const Point& a, const Point& b, float r = 1.f)
-{
-	Vector ab = b - a;
-	Vector p, y, z;
-	Vector abn = normalize(ab);
-	float lab = length(ab);
-	if (lab < 0.00001f) return;
-	if (fabs(ab.x) > 0.25f)
-		p = Vector(0, 1, 0);
-	else
-		p = Vector(1, 0, 0);
+void App_Runner::collision() {
+	Box play = player.getCollision();
 
-	y = cross(abn, p);
-	y = normalize(y);
-	z = cross(abn, y);
-	Transform T(z, abn, y, Vector(0, 0, 0));
-	//cout << T[0] << endl;
-	//cout << T[1] << endl;
-	//cout << T[2] << endl;
-	//cout << T[3] << endl;
+	detectCollision_Obstacles(player, play, &scoreValue, tuyau->getPart()[0]->getObstacles());
+	detectCollision_Obstacles(player, play, &scoreValue, tuyau->getPart()[1]->getObstacles());
 
-	draw_cylinder(Translation(Vector(a)) * T * Scale(r, lab, r));
+	detectCollsion_Bonus(player, play, &scoreValue, tuyau->getPart()[0]->getBonus());
+	detectCollsion_Bonus(player, play, &scoreValue, tuyau->getPart()[1]->getBonus());
 }
+
+
+
+
+
+

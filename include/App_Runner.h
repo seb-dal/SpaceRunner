@@ -10,14 +10,18 @@
 
 #include <stdio.h>
 #include <vector>
-#include <app.h>
+#include "runner/include/Viewer.h"
 #include <thread>
 #include <runner/include/Player.h>
 #include <runner/include/Camera.h>
 #include <runner/include/Pipeline.h>
+#include <src/gKit/text.h>
+#include <runner/include/MeshLoader.h>
 
 
-class App_Runner : public App {
+class App_Runner : public Viewer {
+	MeshLoader loader;
+
 	const float sizePipe = 50;
 	const float zoom = 2;
 
@@ -26,12 +30,12 @@ class App_Runner : public App {
 
 	Player player;
 
-	std::vector<Point> subPoint;
-	std::vector<Vector> v;
+	//std::vector<Point> subPoint;
+	//std::vector<Vector> v;
 
-	Mesh m_cylinder;
-	Mesh m_cylinder_cover;
-	void init_cylinder();
+
+	Text score;
+	float scoreValue = 0;
 
 public:
 	App_Runner(const int width, const int height);
@@ -40,6 +44,6 @@ public:
 	virtual int update(const float time, const float delta);
 	virtual int render();
 
-	void draw_cylinder(const Transform& T);
-	void draw_cylinder(const Point& a, const Point& b, float r);
+	void collision();
+
 };
