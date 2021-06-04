@@ -113,9 +113,8 @@ void Pipeline_Part_CMR::genColision(MeshLoader& loader, Pipeline* pipe, unsigned
 			Transform T = Utility::modelOnPipe(
 				pipe,
 				NumPart * NB_POINTS + p,
-				sizePipe * 0.7,
-				a,
-				Vector(-1, 0, 0)
+				sizePipe * 0.8,
+				a
 			);
 
 			list_Obstacle[i] = new ObstacleObj(loader, T);
@@ -129,8 +128,7 @@ void Pipeline_Part_CMR::genColision(MeshLoader& loader, Pipeline* pipe, unsigned
 				pipe,
 				NumPart * NB_POINTS + p,
 				sizePipe * 1.6,
-				a,
-				Vector(1, 1, 1)
+				a
 			);
 
 			list_Bonus[i] = new BonusObj(loader, T);

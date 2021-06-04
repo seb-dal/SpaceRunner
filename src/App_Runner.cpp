@@ -122,7 +122,7 @@ int App_Runner::update(const float time, const float delta) {
 		fps = FPS::getFPS(delta);
 	}
 
-	//std::cout << "time:" << time << "  delta:" << delta << "  FPS:" << fps << "\n";
+	std::cout << "time:" << time << "  delta:" << delta << "  FPS:" << fps << "\n";
 
 	scoreValue += delta / 100.f;
 

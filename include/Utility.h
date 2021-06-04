@@ -119,5 +119,8 @@ public:
 	 * \param forwardObj
 	 * \return
 	 */
-	static Transform modelOnPipe(Pipeline* pipe, const float position, const float heightOnPipe, const float rotation, const Vector forwardObj);
+	static Transform modelOnPipe(Pipeline* pipe, const float position, const float heightOnPipe, const float rotation);
+
+
+	static Transform Lookat(const Point& from, const Point& to, const Vector& up);
 };

@@ -241,28 +241,41 @@ Point Utility::CatMullRom(const Point& p0, const Point& p1, const Point& p2, con
 	return C;
 }
 
-Transform Utility::modelOnPipe(Pipeline* pipe, const float position, const float heightOnPipe, const float rotation, const Vector forwardObj) {
-	Transform model = Translation(
-		Vector(rotAround(
-			pipe->getPosition(position),
+
+Transform Utility::modelOnPipe(Pipeline* pipe, const float position, const float heightOnPipe, const float rotation) {
+	Transform model = (Utility::Lookat(
+		Utility::rotAround(
+			pipe->getPosition(position - 1),
 			heightOnPipe,
-			pipe->getAxe(position),
-			pipe->getNormal(position),
+			pipe->getAxe(position - 1),
+			pipe->getNormal(position - 1),
 			rotation
-		))
-	);
-
-	model = model(Rotation(
-		normalize(pipe->getAxe(position)),
-		rotation
-	));
-
-	model = model(Rotation(
-		normalize(forwardObj),
-		normalize(pipe->getAxe(position))
+		),
+		Utility::rotAround(
+			pipe->getPosition(position + 1),
+			heightOnPipe,
+			pipe->getAxe(position + 1),
+			pipe->getNormal(position + 1),
+			rotation
+		),
+		(Rotation(pipe->getAxe(position), rotation))(pipe->getNormal(position))
 	));
 
 
 	return model;
+}
+
+Transform Utility::Lookat(const Point& from, const Point& to, const Vector& up) {
+	Vector dir = normalize(Vector(from, to));
+	Vector right = normalize(cross(dir, normalize(up)));
+	Vector newUp = normalize(cross(right, dir));
+
+	Transform m(
+		right.x, newUp.x, -dir.x, from.x,
+		right.y, newUp.y, -dir.y, from.y,
+		right.z, newUp.z, -dir.z, from.z,
+		0, 0, 0, 1);
+
+	return m;
 }
 

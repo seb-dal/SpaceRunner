@@ -63,13 +63,13 @@ void Player::action(float fps, Pipeline* pipe) {
 	));
 	objModel = objModel(Rotation(pipe->getAxe(pos + Pipeline_Part_CMR::NB_POINTS / 2), rotationCircule));
 	objModel = objModel(Rotation(Vector(-1, 0, 0), pipe->getAxe(pos + Pipeline_Part_CMR::NB_POINTS / 2)));*/
+
 	objModel = Utility::modelOnPipe(
 		pipe,
 		pos + Pipeline_Part_CMR::NB_POINTS / 2,
 		pipe->getSizePipe() * 1.5,
-		rotationCircule,
-		Vector(-1, 0, 0)
-	);
+		rotationCircule
+	)(RotationY(90));
 
 	colision.T = objModel;
 
