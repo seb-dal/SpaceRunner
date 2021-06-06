@@ -10,6 +10,8 @@ public:
 
 	Box& getBonusHitBox();
 
+	bool getHitted();
+	void hitted();
 private:
 	static const float scale_collsionBoxBonus;
 	static const float scale_CollisionBox;
@@ -17,4 +19,5 @@ private:
 
 	//==============================
 	Box Bonus_HitBox;
+	bool hit;
 };

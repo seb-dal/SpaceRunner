@@ -5,6 +5,7 @@ const float ObstacleObj::scale_CollisionBox = 1.1;
 const float ObstacleObj::scale_model = 1.3;
 
 ObstacleObj::ObstacleObj(MeshLoader& loader, Transform& T) {
+	hit = false;
 	object = &loader.Obstacle;
 	groups_Obj = &loader.groups_Obstacle;
 
@@ -24,6 +25,8 @@ ObstacleObj::ObstacleObj(MeshLoader& loader, Transform& T) {
 	Bonus_HitBox.T = Bonus_HitBox.T(Scale(scale_collsionBoxBonus));
 }
 
-Box& ObstacleObj::getBonusHitBox() {
-	return Bonus_HitBox;
-}
+Box& ObstacleObj::getBonusHitBox() { return Bonus_HitBox; }
+
+bool ObstacleObj::getHitted() { return hit; }
+
+void ObstacleObj::hitted() { hit = true; }

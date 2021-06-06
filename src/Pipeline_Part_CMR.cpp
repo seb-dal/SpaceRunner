@@ -103,10 +103,9 @@ void Pipeline_Part_CMR::genColision(MeshLoader& loader, Pipeline* pipe, unsigned
 	if (nbColision > 0) {
 
 		float pp = (NB_POINTS - 4) / ((float)(nbColision));
-		list_Obstacle = std::vector<ObstacleObj*>(nbColision);
-		list_Bonus = std::vector<BonusObj*>(nbBonus);
+		//list_Obstacle = std::vector<ObstacleObj*>(nbColision);
 
-		for (int i = 0; i < list_Obstacle.size(); i++) {
+		for (int i = 0; i < nbColision; i++) {
 			float a = Utility::randf(0, 360);
 			float p = Utility::randf(pp * i, pp * (i + 1));
 
@@ -117,10 +116,15 @@ void Pipeline_Part_CMR::genColision(MeshLoader& loader, Pipeline* pipe, unsigned
 				a
 			);
 
-			list_Obstacle[i] = new ObstacleObj(loader, T);
+			//list_Obstacle[i] = new ObstacleObj(loader, T);
+			list_Obstacle.push_back(new ObstacleObj(loader, T));
 		}
+	}
+	if (nbBonus > 0) {
+		float pp = (NB_POINTS - 4) / ((float)(nbBonus));
+		//list_Bonus = std::vector<BonusObj*>(nbBonus);
 
-		for (int i = 0; i < list_Bonus.size(); i++) {
+		for (int i = 0; i < nbBonus; i++) {
 			float a = Utility::randf(0, 360);
 			float p = Utility::randf(pp * i, pp * (i + 1));
 
@@ -131,7 +135,8 @@ void Pipeline_Part_CMR::genColision(MeshLoader& loader, Pipeline* pipe, unsigned
 				a
 			);
 
-			list_Bonus[i] = new BonusObj(loader, T);
+			//list_Bonus[i] = new BonusObj(loader, T);
+			list_Bonus.push_back(new BonusObj(loader, T));
 		}
 	}
 }

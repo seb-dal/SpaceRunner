@@ -231,13 +231,28 @@ Point Utility::CatMullRom(const Point& p0, const Point& p1, const Point& p2, con
 	float t1 = GetT(t0, alpha, p0, p1);
 	float t2 = GetT(t1, alpha, p1, p2);
 	float t3 = GetT(t2, alpha, p2, p3);
+
 	t = lerp(t1, t2, t);
-	Point A1 = (t1 - t) / (t1 - t0) * p0 + (t - t0) / (t1 - t0) * p1;
-	Point A2 = (t2 - t) / (t2 - t1) * p1 + (t - t1) / (t2 - t1) * p2;
-	Point A3 = (t3 - t) / (t3 - t2) * p2 + (t - t2) / (t3 - t2) * p3;
-	Point B1 = (t2 - t) / (t2 - t0) * A1 + (t - t0) / (t2 - t0) * A2;
-	Point B2 = (t3 - t) / (t3 - t1) * A2 + (t - t1) / (t3 - t1) * A3;
-	Point C = (t2 - t) / (t2 - t1) * B1 + (t - t1) / (t2 - t1) * B2;
+
+	float tmt0 = t - t0;
+	float tmt1 = t - t1;
+	float t2mt = t2 - t;
+	float t3mt = t3 - t;
+	float t1mt2 = t1 - t0;
+	float t2mt1 = t2 - t1;
+	float t3mt2 = t3 - t2;
+	float t2mt0 = t2 - t0;
+	float t3mt1 = t3 - t1;
+
+	Point A1 = (t1 - t) / (t1mt2)*p0 + (tmt0) / (t1mt2)*p1;
+	Point A2 = (t2mt) / (t2mt1)*p1 + (tmt1) / (t2mt1)*p2;
+	Point A3 = (t3mt) / (t3mt2)*p2 + (t - t2) / (t3mt2)*p3;
+
+	Point B1 = (t2mt) / (t2mt0)*A1 + (tmt0) / (t2mt0)*A2;
+	Point B2 = (t3mt) / (t3mt1)*A2 + (tmt1) / (t3mt1)*A3;
+
+	Point C = (t2mt) / (t2mt1)*B1 + (tmt1) / (t2mt1)*B2;
+
 	return C;
 }
 

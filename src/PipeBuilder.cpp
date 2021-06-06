@@ -3,9 +3,7 @@
 #include <map>
 
 
-PipeBuilder::PipeBuilder(unsigned int N) {
-	this->N = N;
-}
+PipeBuilder::PipeBuilder(unsigned int N) { this->N = N; }
 
 PipeBuilder::~PipeBuilder() {
 	for (int i = 0; i < listSegmentCircule.size(); i++) {
@@ -83,21 +81,33 @@ void PipeBuilder::drawPipe(Mesh& obj, std::vector<Color>& v) {
 
 				p4->addTriangle(t2);
 
-
-				p1->setColor(v.at(p % v.size()));
-				p2->setColor(v.at(p % v.size()));
+				t1->setTextCoord(
+					vec2((float)(i - 1) / ((float)listSegmentCircule.size() / 4.f), (float)(p) / (float)(N)),
+					vec2((float)(i) / ((float)listSegmentCircule.size() / 4.f), (float)(p) / (float)(N)),
+					vec2((float)(i - 1) / ((float)listSegmentCircule.size() / 4.f), (float)(p + 1) / (float)(N)),
+					true
+				);
+				t2->setTextCoord(
+					vec2((float)(i - 1) / ((float)listSegmentCircule.size() / 4.f), (float)(p) / (float)(N)),
+					vec2((float)(i - 1) / ((float)listSegmentCircule.size() / 4.f), (float)(p + 1) / (float)(N)),
+					vec2((float)(i) / ((float)listSegmentCircule.size() / 4.f), (float)(p + 1) / (float)(N)),
+					true
+				);
+				//p1->setColor(v.at(p % v.size()));
+				//p2->setColor(v.at(p % v.size()));
+				//p1->setColor(Blue());
+				//p2->setColor(Blue());
+				//p1->setTexCoord((float)(i - 1) / (float)listSegmentCircule.size(), (float)(p) / (float)(N));
+				//p2->setTexCoord((float)(i) / (float)listSegmentCircule.size(), (float)(p) / (float)(N));
 			}
 		}
 	}
 
 
-	for (TriangleMesh* t : listTriangle) {
-		t->draw(obj);
-	}
+	for (TriangleMesh* t : listTriangle) { t->draw(obj); }
 
-	for (TriangleMesh* t : listTriangle) {
-		delete t;
-	}
+	for (TriangleMesh* t : listTriangle) { delete t; }
+
 	for (std::map<std::string, PointMesh*>::iterator it = listPoint.begin(); it != listPoint.end(); ++it) {
 		it->second->clear();
 		delete it->second;

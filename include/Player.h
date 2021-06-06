@@ -9,6 +9,9 @@
 
 
 class Player {
+	int health = 3;
+	int bonusCollect = 0;
+
 	float rotationCircule = 0;
 	float vitesse = 0;
 	float pos = 10;
@@ -53,5 +56,17 @@ public:
 	 *
 	 */
 	void stopSpeed();
+
+	void hitObstacle();
+	int getHealth();
+
+	void collectBonus(float* scoreValue);
+
+	int getCollectedBonus();
+
+	/**
+	 * reset all value in case of game over.
+	 */
+	void reset();
 };
 

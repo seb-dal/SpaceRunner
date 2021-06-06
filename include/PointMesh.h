@@ -16,6 +16,11 @@ public:
 	void addTriangle(TriangleMesh* t);
 
 	Point getPoint();
+
+	void setTexCoord(float x, float y);
+	void setTexCoord(vec2& tex);
+	vec2 getTexCoord();
+
 	Color getColor();
 	void setColor(Color col);
 
@@ -25,6 +30,11 @@ public:
 
 private:
 	Point p;
+
+	bool tex_Ok = false;
+	vec2 tex;
+
+	bool c_ok = false;
 	Color c;
 	std::vector<TriangleMesh*> inTriangles;
 };

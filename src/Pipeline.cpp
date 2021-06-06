@@ -38,7 +38,7 @@ Pipeline::Pipeline(MeshLoader& loader, int sizePipe, unsigned int N) :sizePipe(s
 	}
 
 
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < 12; i++) {
 		addNewPart(loader);
 	}
 }
@@ -80,7 +80,7 @@ void Pipeline::addNewPart(MeshLoader& loader) {
 	nbPartCreated++;
 	parts.push_back(part);
 
-	if (nbPartCreated > 10) {
+	if (nbPartCreated > 6) {
 		part->genColision(loader, this, 2, 1);
 	}
 }
@@ -104,16 +104,12 @@ void Pipeline::deleteLastPart() {
 	}
 }
 
-void Pipeline::requestDelete() {
-	requestDeleteNB++;
-}
+void Pipeline::requestDelete() { requestDeleteNB++; }
 
 
 
 
-float Pipeline::getSizePipe() {
-	return sizePipe;
-}
+float Pipeline::getSizePipe() { return sizePipe; }
 
 
 
@@ -146,9 +142,7 @@ Vector Pipeline::getNormal(float pos) {
 	return (1 - floatPart) * parts.at(mm)->getV().at(mmm) + (floatPart)*parts.at(nn)->getV().at(nnn);
 }
 
-std::vector<Pipeline_Part_CMR*>& Pipeline::getPart() {
-	return parts;
-}
+std::vector<Pipeline_Part_CMR*>& Pipeline::getPart() { return parts; }
 
 Vector Pipeline::getAxe(float pos) {
 	return normalize(Vector(

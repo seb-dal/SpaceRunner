@@ -15,6 +15,7 @@ Player::Player(MeshLoader& loader, const float sizePipe, const float zoom) {
 
 }
 
+
 Player::~Player() {
 	object.release();
 }
@@ -28,7 +29,7 @@ void Player::action(float fps, Pipeline* pipe) {
 
 	//if (key_state(SDLK_UP) || key_state(SDLK_z))
 	pos += vitesse * (60 / fps);
-	vitesse = std::min(vitMax, vitesse + (60 / fps) * (0.01f / (1000000 * vitesse * vitesse)));
+	vitesse = std::min(vitMax, vitesse + (60 / fps) * (0.01f / (100000000 * vitesse * vitesse * vitesse)));
 
 	camera.setRatio(window_width(), window_height());
 
@@ -90,15 +91,35 @@ Mesh& Player::getObject() { return object; }
 
 Transform& Player::getObjModel() { return objModel; }
 
-std::vector<TriangleGroup>& Player::getGroupeTriangle() {
-	return groups;
+std::vector<TriangleGroup>& Player::getGroupeTriangle() { return groups; }
+
+Box Player::getCollision() { return colision; }
+
+void Player::stopSpeed() { vitesse = 0; }
+
+void Player::hitObstacle() { health--; }
+int Player::getHealth() { return health; }
+
+void Player::collectBonus(float* scoreValue) {
+	bonusCollect++;
+	if (bonusCollect >= 100) {//if the player manage to collect 100 bonus, he gain 1 health 
+		if (health < 5) {
+			health += 1;
+		}
+		else {
+			*scoreValue += 100000;//if the player manage to keep 5 health and get 100 bonus, he obtain a huge score bonus
+		}
+		bonusCollect -= 100;
+	}
 }
 
-Box Player::getCollision() {
-	return colision;
-}
+int Player::getCollectedBonus() { return bonusCollect; }
 
-void Player::stopSpeed() {
+void Player::reset() {
+	health = 3;
+	bonusCollect = 0;
+	rotationCircule = 0;
 	vitesse = 0;
+	pos = 10;
 }
 

@@ -107,20 +107,37 @@ public:
 
 	static float lerp(float a, float b, float t);
 
-	static Point CatMullRom(const Point& p0, const Point& p1, const Point& p2, const Point& p3, float t /* between 0 and 1 */, float alpha = .5f /* between 0 and 1 */);
+	/**
+	 * Compute one point that belong to a smooth line passing through the 4 points.
+	 *
+	 * \param p0 point before
+	 * \param p1 point start
+	 * \param p2 point end
+	 * \param p3 point after
+	 * \param t position of the point between start and end ( value between 0 and 1 )
+	 * \param alpha strangth of the rotation ( value between 0 and 1 )
+	 * \return
+	 */
+	static Point CatMullRom(const Point& p0, const Point& p1, const Point& p2, const Point& p3, float t, float alpha = .5f);
 
 	/**
-	 * .
+	 * Get model matrix for object on the pipe.
 	 *
-	 * \param pipe
-	 * \param position
-	 * \param heightOnPipe
-	 * \param rotation
-	 * \param forwardObj
+	 * \param pipe pointer to the pipe
+	 * \param position int position on the pipe
+	 * \param heightOnPipe height at which the object will be
+	 * \param rotation angle at which the object will rotate around the pipe
 	 * \return
 	 */
 	static Transform modelOnPipe(Pipeline* pipe, const float position, const float heightOnPipe, const float rotation);
 
-
+	/**
+	 * Lookat for object (without .inverse() :p).
+	 *
+	 * \param from position of the object
+	 * \param to position the object lookat
+	 * \param up vector up
+	 * \return
+	 */
 	static Transform Lookat(const Point& from, const Point& to, const Vector& up);
 };

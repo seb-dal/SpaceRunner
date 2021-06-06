@@ -12,14 +12,12 @@ Circule::Circule(unsigned int N, const Point& center, const float size, const Ve
 }
 
 Circule::~Circule() {
-
 	for (int i = 0; i < N; i++) {
-		delete listPoints[i];
+		delete listPoints[i];//delete all points first
 	}
 
-	delete[] listPoints;
+	delete[] listPoints;//delete the table pointer
 }
 
-Point& Circule::get(unsigned int i) {
-	return *listPoints[i % N];
-}
+//circular get point
+Point& Circule::get(unsigned int i) { return *listPoints[i % N]; }

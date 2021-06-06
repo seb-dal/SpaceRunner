@@ -20,14 +20,8 @@ BonusObj::BonusObj(MeshLoader& loader, Transform& T) {
 	taken = false;
 }
 
-void BonusObj::take() {
-	taken = true;
-}
+void BonusObj::take() { taken = true; }
 
-bool BonusObj::haveBeenTaken() {
-	return taken;
-}
+bool BonusObj::haveBeenTaken() { return taken; }
 
-void BonusObj::Rotate(const Vector& v, const float angle) {
-	ModelMesh = ModelMesh(Rotation(v, angle));
-}
+void BonusObj::Rotate(const Vector& v, const float angle) { ModelMesh = ModelMesh(Rotation(v, angle)); }

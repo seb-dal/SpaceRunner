@@ -1,4 +1,4 @@
-#include "runner/include/App_Runner.h"
+﻿#include "runner/include/App_Runner.h"
 
 #include <runner/include/Utility.h>
 #include <runner/include/FPS.h>
@@ -46,10 +46,12 @@ int App_Runner::init() {
 	Viewer::init();
 
 	score = create_text();
-
+	fpsDisplay = create_text();
 	//Create thread to create and request delete part of the pipe
 	thread_PipeBuilder = std::thread(createPartIfNeeded, std::ref(player), std::ref(tuyau), std::ref(loader));
-
+	gameoverDiplay = create_text();
+	print(gameoverDiplay, 65, 6, "          GAME OVER\n\n\n Press 'R' to restart the game");
+	gameoverDiplay.color = Red();
 
 
 	// etat openGL par defaut
@@ -85,6 +87,8 @@ int App_Runner::quit() {
 		thread_PipeBuilder.join();
 
 	release_text(score);
+	release_text(fpsDisplay);
+	release_text(gameoverDiplay);
 
 	return 0;   // ras, pas d'erreur
 }
@@ -122,33 +126,71 @@ int App_Runner::update(const float time, const float delta) {
 		fps = FPS::getFPS(delta);
 	}
 
-	std::cout << "time:" << time << "  delta:" << delta << "  FPS:" << fps << "\n";
+	//std::cout << "time:" << time << "  delta:" << delta << "  FPS:" << fps << "\n";
+	if (!gameover) {
+		scoreValue += delta / 100.f;
 
-	scoreValue += delta / 100.f;
+		// Player Action
+		player.action(fps, tuyau);
 
-	// Player Action
-	player.action(fps, tuyau);
+		// Delete part if requested
+		tuyau->deleteLastPart();
 
-	// Delete part if requested
-	tuyau->deleteLastPart();
+		//Animation Bonus Box
+		std::vector<Pipeline_Part_CMR*> parts = tuyau->getPart();
+		rotationBonus(parts[0]->getBonus());
+		rotationBonus(parts[1]->getBonus());
+		rotationBonus(parts[2]->getBonus());
+		rotationBonus(parts[3]->getBonus());
 
-	//Animation Bonus Box
-	std::vector<Pipeline_Part_CMR*> parts = tuyau->getPart();
-	rotationBonus(parts[0]->getBonus());
-	rotationBonus(parts[1]->getBonus());
-	rotationBonus(parts[2]->getBonus());
-	rotationBonus(parts[3]->getBonus());
+		// Collsion of the player with other box
+		collision();
+	}
+	else {
+		if (key_state(SDLK_r) || key_state(SDLK_INSERT)) {
+			continuCreate = false;
+			if (thread_PipeBuilder.joinable())
+				thread_PipeBuilder.join();
 
-	// Collsion of the player with other box
-	collision();
+			delete tuyau;
+			tuyau = new Pipeline(loader, sizePipe, 32);
+			player.reset();
 
+			posCreate = 100;
+			continuCreate = true;
+			thread_PipeBuilder = std::thread(createPartIfNeeded, std::ref(player), std::ref(tuyau), std::ref(loader));
+
+			gameover = false;
+			scoreValue = 0;
+		}
+	}
 
 
 	// Score text 
 	clear(score);
-	std::string textScore = "Score: ";
+	std::string textScore;
+
+	textScore.append("Health: ");
+	for (int i = 0; i < player.getHealth(); i++) {
+		textScore.append("O ");
+	}
+
+	textScore.append("\n");
+
+	textScore.append("Bonus collected: ");
+	textScore.append(std::to_string(player.getCollectedBonus()));
+
+	textScore.append("\n");
+
+	textScore.append("   Score: ");
 	textScore.append(std::to_string((int)scoreValue));
+
 	print(score, 70, 1, textScore.c_str());
+
+	clear(fpsDisplay);
+	std::string fpstext;
+	fpstext.append(std::to_string((int)fps));
+	print(fpsDisplay, 120, 1, fpstext.c_str());
 
 	return 0;
 }
@@ -165,30 +207,34 @@ int App_Runner::render() {
 	// on commence par effacer la fenetre avant de dessiner quelquechose
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// on efface aussi le zbuffer
-
-	//draw(objet, Transform(), camera.get_Camera(), camera.get_Projection());
-	for (Pipeline_Part_CMR* p : tuyau->getPart()) {
-		drawer.draw(player.getCamera(), *p->get(), Identity());
-
-
-		std::vector<ObstacleObj*> list_O = p->getObstacles();
-		for (int i = 0; i < list_O.size(); i++) {
-			drawer.draw(player.getCamera(), *list_O.at(i)->getMeshObject(), list_O.at(i)->getModel(), *list_O.at(i)->getTriangleGroupe());
-		}
+	if (!gameover) {
+		//draw(objet, Transform(), camera.get_Camera(), camera.get_Projection());
+		for (Pipeline_Part_CMR* p : tuyau->getPart()) {
+			drawer.draw(player.getCamera(), *p->get(), Identity(), loader.textPipe);
 
 
-		std::vector<BonusObj*> list_B = p->getBonus();
-		for (int i = 0; i < list_B.size(); i++) {
-			if (!list_B.at(i)->haveBeenTaken()) {
-				drawer.draw(player.getCamera(), *list_B.at(i)->getMeshObject(), list_B.at(i)->getModel(), *list_B.at(i)->getTriangleGroupe());
+			std::vector<ObstacleObj*> list_O = p->getObstacles();
+			for (int i = 0; i < list_O.size(); i++) {
+				drawer.draw(player.getCamera(), *list_O.at(i)->getMeshObject(), list_O.at(i)->getModel(), *list_O.at(i)->getTriangleGroupe());
 			}
+
+
+			std::vector<BonusObj*> list_B = p->getBonus();
+			for (int i = 0; i < list_B.size(); i++) {
+				if (!list_B.at(i)->haveBeenTaken()) {
+					drawer.draw(player.getCamera(), *list_B.at(i)->getMeshObject(), list_B.at(i)->getModel(), *list_B.at(i)->getTriangleGroupe());
+				}
+			}
+			//draw(*nbPartCreated->get(), Identity(), camera.get_Camera(), camera.get_Projection());
 		}
-		//draw(*nbPartCreated->get(), Identity(), camera.get_Camera(), camera.get_Projection());
+
+		drawer.draw(player.getCamera(), player.getObject(), player.getObjModel(), player.getGroupeTriangle());
 	}
-
-	drawer.draw(player.getCamera(), player.getObject(), player.getObjModel(), player.getGroupeTriangle());
-
 	draw(score, window_width(), window_height());
+	draw(fpsDisplay, window_width(), window_height());
+	if (gameover) {
+		draw(gameoverDiplay, window_width(), window_height());
+	}
 
 	return 1;
 }
@@ -205,13 +251,19 @@ static void detectCollision_Obstacles(Player& player, Box& play, float* scoreVal
 	for (int i = 0; i < list_C.size(); i++) {
 		if (play.collides(list_C[i]->getBonusHitBox())) {
 			if (play.collides(list_C[i]->getHitBox())) {
-				std::cout << "Colision" << std::endl;
 				player.stopSpeed();
-				*scoreValue = 0;
+				if (!list_C[i]->getHitted()) { //health decrease only count once
+					std::cout << "Colision" << std::endl;
+					player.hitObstacle();
+					list_C[i]->hitted();
+				}
+				*scoreValue = std::max(*scoreValue - 25, 0.f);//penality for staying on obstacle
 			}
 			else {
-				std::cout << "Bonus Close" << std::endl;
-				*scoreValue += 100;
+				if (!list_C[i]->getHitted()) {//avoir getting point when Obstacle touch
+					std::cout << "Bonus Close" << std::endl;
+					*scoreValue += 100; //pass close to obstacle
+				}
 			}
 		}
 	}
@@ -231,6 +283,7 @@ static void detectCollsion_Bonus(Player& player, Box& play, float* scoreValue, s
 			if (play.collides(list_B[i]->getHitBox())) {
 				list_B[i]->take();
 				std::cout << "Bonus Block" << std::endl;
+				player.collectBonus(scoreValue);
 				*scoreValue += 250;
 			}
 		}
@@ -247,6 +300,11 @@ void App_Runner::collision() {
 	detectCollision_Obstacles(player, play, &scoreValue, parts[1]->getObstacles());
 	detectCollision_Obstacles(player, play, &scoreValue, parts[2]->getObstacles());
 	detectCollision_Obstacles(player, play, &scoreValue, parts[3]->getObstacles());
+
+	if (player.getHealth() < 0) {
+		gameover = true;
+		continuCreate = false;
+	}
 
 	detectCollsion_Bonus(player, play, &scoreValue, parts[0]->getBonus());
 	detectCollsion_Bonus(player, play, &scoreValue, parts[1]->getBonus());

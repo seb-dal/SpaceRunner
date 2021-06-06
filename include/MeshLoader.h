@@ -1,6 +1,7 @@
 #pragma once
 #include <src/gKit/mesh.h>
 #include <src/gKit/wavefront.h>
+#include <src/gKit/texture.h>
 
 /**
  * Load all the Mesh object of the application.
@@ -15,6 +16,8 @@ public:
 		groups_Bonus = Bonus.groups();
 		groups_Obstacle = Obstacle.groups();
 		groups_Play = Play.groups();
+
+		textPipe = read_texture(0, "runner/data/pipe.jpg");
 	}
 
 	void release() {
@@ -36,4 +39,5 @@ public:
 	Mesh Play;
 	std::vector<TriangleGroup> groups_Play;
 
+	GLuint textPipe;
 };

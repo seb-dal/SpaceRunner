@@ -32,10 +32,14 @@ class App_Runner : public Viewer {
 
 	//std::vector<Point> subPoint;
 	//std::vector<Vector> v;
-
+	bool gameover = false;
 
 	Text score;
 	float scoreValue = 0;
+
+	Text fpsDisplay;
+	Text gameoverDiplay;
+
 
 public:
 	App_Runner(const int width, const int height);
