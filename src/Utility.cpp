@@ -254,6 +254,7 @@ float Utility::lerp(float a, float b, float t) {
 
 
 Point Utility::CatMullRom(const Point& p0, const Point& p1, const Point& p2, const Point& p3, float t, float alpha) {
+    // https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline
 	float t0 = 0.0f;
 	float t1 = GetT(t0, alpha, p0, p1);
 	float t2 = GetT(t1, alpha, p1, p2);

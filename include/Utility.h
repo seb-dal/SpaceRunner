@@ -138,7 +138,8 @@ public:
 
 
 	/**
-	 * Compute one point that belong to a smooth line passing through the 4 points.
+	 * Compute centripetal Catmull–Rom spline.
+     * https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline
 	 *
 	 * \param p0 point before
 	 * \param p1 point start

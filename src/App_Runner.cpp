@@ -293,7 +293,7 @@ static void detectCollision_Obstacles(float time, Player& player, Box& play, flo
 			else {
 				if (!list_C[i]->getHitted()) {//avoir getting point when Obstacle touch
 					std::cout << "Bonus Close" << std::endl;
-					*scoreValue += 100; //pass close to obstacle
+					*scoreValue += 200; //pass close to obstacle
 				}
 			}
 		}
