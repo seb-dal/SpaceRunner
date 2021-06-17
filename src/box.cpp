@@ -6,19 +6,15 @@ Box::Box() {
 	T = Identity();
 }
 
+
+
 Box::Box(const Point& i_pmin, const Point& i_pmax) {
 	pmin = i_pmin;
 	pmax = i_pmax;
 	T = Identity();
 }
 
-/*bool static between(const float min, const float max, const float value) {
-	return min <= value && value <= max;
-}
 
-bool static overlaps(const float min_1, const float max_1, const float min_2, const float max_2) {
-	return between(min_1, max_1, min_2) || between(min_1, max_1, max_2);
-}*/
 
 bool static collidesBox(const Box& A, const Box& B, const int i) {
 	Vector v = B.T.inverse()(A.T(Vector(
@@ -33,14 +29,18 @@ bool static collidesBox(const Box& A, const Box& B, const int i) {
 		((v.z <= 0) ? B.pmax.z : B.pmin.z)
 	)));
 
+	int id2 = i / 2;
 	if (i % 2 == 0)
-		return A.pmax(i / 2) <= corner(i / 2);
+		return A.pmax(id2) <= corner(id2);
 	else
-		return A.pmin(i / 2) >= corner(i / 2);
+		return A.pmin(id2) >= corner(id2);
 }
 
+
+
 bool Box::collides(const Box& rhs) {
-	for (int i = 0; i < 6; i++)
+	int i;
+	for (i = 0; i < 6; i++)
 		if (collidesBox(*this, rhs, i) || collidesBox(rhs, *this, i))
 			return false;
 	return true;

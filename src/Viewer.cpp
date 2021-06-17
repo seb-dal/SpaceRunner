@@ -5,11 +5,15 @@ Viewer::Viewer(const int width, const int height) :App(width, height) {
 
 }
 
+
+
 int Viewer::init() {
 	//init_cube();
 	//init_cylinder();
 	return 0;
 }
+
+
 
 int Viewer::quit() {
 	//m_cube.release();
@@ -20,9 +24,13 @@ int Viewer::quit() {
 }
 
 
+
+
 void Viewer::draw_cube(const Transform& T, Transform& camera, Transform& projection) {
 	draw(m_cube, T, camera, projection);
 }
+
+
 
 void Viewer::init_cube()
 {
@@ -54,6 +62,7 @@ void Viewer::init_cube()
 		m_cube.restart_strip();
 	}
 }
+
 
 
 void Viewer::init_cylinder()
@@ -89,6 +98,9 @@ void Viewer::init_cylinder()
 	}
 }
 
+
+
+
 void Viewer::draw_cylinder(const Transform& T, Transform& camera, Transform& projection)
 {
 	draw(m_cylinder, T, camera, projection);
@@ -100,6 +112,8 @@ void Viewer::draw_cylinder(const Transform& T, Transform& camera, Transform& pro
 	Transform Tcb = T * Translation(0, 0, 0) * Rotation(Vector(1, 0, 0), 180);
 	draw(m_cylinder, Tcb, camera, projection);
 }
+
+
 
 
 void Viewer::draw_cylinder(Transform& camera, Transform& projection, const Point& a, const Point& b, float r = 1.f) {
@@ -121,3 +135,5 @@ void Viewer::draw_cylinder(Transform& camera, Transform& projection, const Point
 
 	draw_cylinder(Translation(Vector(a)) * T * Scale(r, lab, r), camera, projection);
 }
+
+

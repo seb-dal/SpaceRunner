@@ -16,8 +16,8 @@ class Player {
 	float vitesse = 0;
 	float pos = 10;
 
-	Mesh object;
-	std::vector<TriangleGroup> groups;
+	Mesh* object;
+	std::vector<TriangleGroup>* groups;
 
 	Transform objModel;
 	Box colision;
@@ -25,17 +25,18 @@ class Player {
 
 	Camera camera;
 
-
+	int HIT_Animation = 0;
+	int HIT_When = 0;
 public:
 	static const float vitesseRot;
 	static const float vitMax;
-
+	static const int ms_Hit_Anim;
 
 	Player(MeshLoader& loader, const float sizePipe, const float zoom);
 
 	~Player();
 
-	void action(float fps, Pipeline* pipe);
+	void action(float TotalTime, float fps, Pipeline* pipe);
 
 	float getPos();
 
@@ -44,12 +45,10 @@ public:
 	Camera& getCamera();
 
 	Mesh& getObject();
-
-	Transform& getObjModel();
-
 	std::vector<TriangleGroup>& getGroupeTriangle();
 
-	Box getCollision();
+	Transform& getObjModel();
+	Box& getCollision();
 
 	/**
 	 * Decrease the speed of the player to 0.
@@ -57,12 +56,13 @@ public:
 	 */
 	void stopSpeed();
 
-	void hitObstacle();
+	void hitObstacle(float when);
 	int getHealth();
+	int getHIT_Animation();
 
 	void collectBonus(float* scoreValue);
-
 	int getCollectedBonus();
+
 
 	/**
 	 * reset all value in case of game over.

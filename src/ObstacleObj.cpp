@@ -1,32 +1,39 @@
 #include "runner/include/ObstacleObj.h"
 
-const float ObstacleObj::scale_collsionBoxBonus = 2.6;
-const float ObstacleObj::scale_CollisionBox = 1.1;
-const float ObstacleObj::scale_model = 1.3;
+const Transform ObstacleObj::scale_collsionBoxBonus = Scale(2.6);
+const Transform ObstacleObj::scale_CollisionBox = Scale(1.1);
+const Transform ObstacleObj::scale_model = Scale(1.3);
+
 
 ObstacleObj::ObstacleObj(MeshLoader& loader, Transform& T) {
 	hit = false;
-	object = &loader.Obstacle;
-	groups_Obj = &loader.groups_Obstacle;
+	object = &loader.Obstacle.objMesh;
+	groups_Obj = &loader.Obstacle.groups;
 
-	Point pmin, pmax;
-	object->bounds(pmin, pmax);
 
-	HitBox = Box(pmin, pmax);
+	HitBox = Box(loader.Obstacle.bounds.pmin, loader.Obstacle.bounds.pmax);
 	HitBox.T = T;
 	Bonus_HitBox = Box(HitBox);
 
-	ModelMesh = HitBox.T(Scale(scale_model));
+	ModelMesh = HitBox.T(scale_model);
 
-	HitBox.T = HitBox.T(Scale(scale_CollisionBox));
-	int r = rand() % 4;
+	HitBox.T = HitBox.T(scale_CollisionBox);
+	int r = rand() % 4; // change which face of the obstacle the player will see 
 	HitBox.T = HitBox.T(RotationY(90 * r));
 
-	Bonus_HitBox.T = Bonus_HitBox.T(Scale(scale_collsionBoxBonus));
+	Bonus_HitBox.T = Bonus_HitBox.T(scale_collsionBoxBonus);
 }
+
+
 
 Box& ObstacleObj::getBonusHitBox() { return Bonus_HitBox; }
 
+
+
 bool ObstacleObj::getHitted() { return hit; }
 
+
+
 void ObstacleObj::hitted() { hit = true; }
+
+

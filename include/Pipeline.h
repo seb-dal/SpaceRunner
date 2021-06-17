@@ -23,6 +23,7 @@ class Pipeline {
 
 	Vector lastNormal;
 public:
+
 	/**
 	 * .
 	 *
@@ -33,11 +34,15 @@ public:
 
 	~Pipeline();
 
+
+
 	/**
 	 * Ajoute une nouvelle parti.
 	 *
 	 */
 	void addNewPart(MeshLoader& loader);
+
+
 
 	/**
 	 * Supprimer la dernier partie / point.
@@ -45,11 +50,14 @@ public:
 	 */
 	void deleteLastPart();
 
+
+
 	/**
 	 * Request to delete the last part by the main thread.
 	 *
 	 */
 	void requestDelete();
+
 
 
 	/**
@@ -60,6 +68,7 @@ public:
 	float getSizePipe();
 
 
+
 	/**
 	 * Get the position of the center of the pipe.
 	 *
@@ -67,6 +76,8 @@ public:
 	 * \return center of the pipe at the given position
 	 */
 	Point getPosition(float pos);
+
+
 
 	/**
 	 * Get normal of the pipe at the given position.
@@ -76,12 +87,16 @@ public:
 	 */
 	Vector getNormal(float pos);
 
+
+
 	/**
 	 * Get all part of the pipe.
 	 *
 	 * \return list of part of the pipe
 	 */
 	std::vector<Pipeline_Part_CMR*>& getPart();
+
+
 
 	/**
 	 * Get axis of the pipe at the given position.

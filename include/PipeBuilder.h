@@ -16,12 +16,15 @@ public:
 
 	~PipeBuilder();
 
+	/**
+	 * NO LONGER USED.
+	 */
 	void removeFirst();
 
 
 	/**
 	 * Draw the pipe in a mesh.
-	 * 
+	 *
 	 * \param obj Mesh
 	 * \param v list of color
 	 */
@@ -32,7 +35,7 @@ public:
 	 *
 	 * \param size number of circule
 	 */
-	void allocCircule(const unsigned int size);
+	void allocCircule(const size_t size);
 
 	/**
 	 * Add a new circule to the the list of circule with push_back.

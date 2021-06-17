@@ -1,8 +1,7 @@
 #include "runner/include/Utility.h"
 
-/**
-* String value of a color.
-*/
+
+
 
 std::string Utility::toString_Color(Color& c) {
 	std::string res;
@@ -18,9 +17,15 @@ std::string Utility::toString_Color(Color& c) {
 	return res;
 }
 
+
+
+
 Vector Utility::perpendicular_Vector_Triangle(const Vector& a, const Vector& b, const Vector& c) {
 	return normalize(cross((b - a), (c - a)));
 }
+
+
+
 
 float Utility::vertical_angle_triangle(const Vector& a, const Vector& b, const Vector& c) {
 	Vector p = perpendicular_Vector_Triangle(a, b, c), v(0.0f, 10.0f, 0.0f);
@@ -31,25 +36,23 @@ float Utility::vertical_angle_triangle(const Vector& a, const Vector& b, const V
 	return res;
 }
 
-/**
-* Create a Vector from the difference of 2 points
-*/
+
+
 
 Vector Utility::getVector(const Point& from, const Point& to) {
 	return Vector(to.x - from.x, to.y - from.y, to.z - from.z);
 }
 
-/**
-* return the angle between the Vectors v1 and v2
-*/
+
+
 
 float Utility::getAngleBetweenVectors(const Vector& v1, const Vector& v2) {
 	return acos((dot(v1, v2)) / (length(v1) * length(v2)));
 }
 
-/**
-* return the rotation XYZ as a Vector of the 2 points
-*/
+
+
+
 
 Vector Utility::GetAnglesBetween2Points(const Point& from, const Point& to) {
 	Vector vec = getVector(from, to);
@@ -60,19 +63,20 @@ Vector Utility::GetAnglesBetween2Points(const Point& from, const Point& to) {
 	);
 }
 
-/**
-* Get a list of points that are the result of the smoothing of the list of points in param.
-*/
+
+
+
 std::vector<Point> Utility::subdivisionPoint(std::vector<Point>& pointInit, int iteration) {
 	std::vector<Point> result(pointInit);
-
-	for (int it = 0; it < iteration; it++) {
+	int it;
+	size_t i;
+	for (it = 0; it < iteration; it++) {
 		std::vector<Point> temp(result);
 		result.clear();
 		size_t size = temp.size() - 1;
 		//std::cout << size << std::endl;
 		//result.push_back(temp[0]);
-		for (size_t i = 1; i < size; i++) {
+		for (i = 1; i < size; i++) {
 			result.push_back(interPoint(temp[i - 1], temp[i], 0.75));
 			result.push_back(interPoint(temp[i], temp[i + 1], 0.25));
 		}
@@ -82,18 +86,20 @@ std::vector<Point> Utility::subdivisionPoint(std::vector<Point>& pointInit, int 
 	return result;
 }
 
-/**
-* Draw a line with a list of points
-*/
+
+
+
 
 void Utility::drawLine(Mesh& line, std::vector<Point>& listPoint) {
 	line.vertex(listPoint[0]);
-	for (size_t i = 1; i < listPoint.size() - 1; i++) {
+	size_t i, max = listPoint.size() - 1;
+	for (i = 1; i < max; i++) {
 		line.vertex(listPoint[i]);
 		line.vertex(listPoint[i]);
 	}
-	line.vertex(listPoint[listPoint.size() - 1]);
+	line.vertex(listPoint[max]);
 }
+
 
 
 
@@ -104,7 +110,8 @@ void Utility::buildPerpendicularVect(std::vector<Point>& listPoint, std::vector<
 	//vec = normalize(vec * getVector(listPoint[1], listPoint[0]));
 
 	v[0] = ((vec)); // list des transformations
-	for (size_t i = 1; i < listPoint.size() - 1; i++) {
+	size_t i;
+	for (i = 1; i < listPoint.size() - 1; i++) {
 
 		vec = normalize(
 			Rotation(
@@ -118,16 +125,18 @@ void Utility::buildPerpendicularVect(std::vector<Point>& listPoint, std::vector<
 	v[v.size() - 1] = normalize(vec + v[v.size() - 2]);
 }
 
-/**
-* Draw a line with with a Vector parallele to the line
-*/
+
+
+
+
 
 void Utility::drawLineWithVec(Mesh& line, const std::vector<Point>& listPoint, const std::vector<Vector>& v) {
 	line.color(Red()).vertex(listPoint[0]);
 	line.color(Red()).vertex(listPoint[0] + v[0]);
 
 	line.color(White()).vertex(listPoint[0]);
-	for (size_t i = 1; i < listPoint.size(); i++) {
+	size_t i;
+	for (i = 1; i < listPoint.size(); i++) {
 		line.color(White()).vertex(listPoint[i]);
 
 		line.color(Red()).vertex(listPoint[i]);
@@ -139,9 +148,10 @@ void Utility::drawLineWithVec(Mesh& line, const std::vector<Point>& listPoint, c
 	line.color(White()).vertex(listPoint[listPoint.size() - 1]);
 }
 
-/**
-* Build and draw a pipe.
-*/
+
+
+
+
 
 void Utility::buildPipe(Mesh& quad, std::vector<Point>& listPoint, std::vector<Vector>& v, float sizePipe) {
 	buildPerpendicularVect(listPoint, v, Vector(1, 0, 0));
@@ -150,7 +160,8 @@ void Utility::buildPipe(Mesh& quad, std::vector<Point>& listPoint, std::vector<V
 	int N = 16;
 	float L = 8.0f;
 	float X = N / L;
-	for (float i = 0; i < X; i++) {
+	float i;
+	for (i = 0; i < X; i++) {
 		float C = (i / X) * M_PI * 2.f;
 		/*Material col = Material(
 		Color(
@@ -169,25 +180,29 @@ void Utility::buildPipe(Mesh& quad, std::vector<Point>& listPoint, std::vector<V
 	}
 
 	PipeBuilder pipe = PipeBuilder(N);
-	for (size_t i = 0; i < listPoint.size() - 1; i++) {
+	size_t j, size;
+	for (j = 0; j < listPoint.size() - 1; j++) {
 		pipe.addCircule(
-			listPoint[i],
+			listPoint[j],
 			sizePipe,
 			getVector(
-				listPoint[i],
-				listPoint[i + 1]
+				listPoint[j],
+				listPoint[j + 1]
 			),
-			v[i]
+			v[j]
 		);
 	}
+
+
+	size = listPoint.size() - 1;
 	pipe.addCircule(
-		listPoint[listPoint.size() - 1],
+		listPoint[size],
 		sizePipe,
 		getVector(
-			listPoint[listPoint.size() - 2],
-			listPoint[listPoint.size() - 1]
+			listPoint[size - 1],
+			listPoint[size]
 		),
-		v[listPoint.size() - 1]
+		v[size]
 	);
 
 
@@ -195,25 +210,33 @@ void Utility::buildPipe(Mesh& quad, std::vector<Point>& listPoint, std::vector<V
 }
 
 
-/*
-*Random value between -1 and 1
-*/
+
+
+
 
 float Utility::randf() {
 	return 1.f - ((float)rand() / ((float)RAND_MAX / 2.f));
 }
 
+
+
 float Utility::randomf() {
 	return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);;
 }
+
+
 
 float Utility::randf(const float LO, const float HI) {
 	return LO + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HI - LO)));
 }
 
+
+
 Point Utility::rotAround(const Point& center, float size, const Vector& axis, const Vector& normal, float angle) {
 	return center + Scale(size)(Rotation(normalize(axis), angle)(normalize(normal)));
 }
+
+
 
 float Utility::GetT(const float t, const float alpha, const Point& p0, const Point& p1) {
 	auto d = p1 - p0;
@@ -222,9 +245,13 @@ float Utility::GetT(const float t, const float alpha, const Point& p0, const Poi
 	return (b + t);
 }
 
+
+
 float Utility::lerp(float a, float b, float t) {
 	return a + t * (b - a);
 }
+
+
 
 Point Utility::CatMullRom(const Point& p0, const Point& p1, const Point& p2, const Point& p3, float t, float alpha) {
 	float t0 = 0.0f;
@@ -257,20 +284,24 @@ Point Utility::CatMullRom(const Point& p0, const Point& p1, const Point& p2, con
 }
 
 
+
+
 Transform Utility::modelOnPipe(Pipeline* pipe, const float position, const float heightOnPipe, const float rotation) {
+	float posm1 = position - 1, posp1 = position + 1;
+
 	Transform model = (Utility::Lookat(
 		Utility::rotAround(
-			pipe->getPosition(position - 1),
+			pipe->getPosition(posm1),
 			heightOnPipe,
-			pipe->getAxe(position - 1),
-			pipe->getNormal(position - 1),
+			pipe->getAxe(posm1),
+			pipe->getNormal(posm1),
 			rotation
 		),
 		Utility::rotAround(
-			pipe->getPosition(position + 1),
+			pipe->getPosition(posp1),
 			heightOnPipe,
-			pipe->getAxe(position + 1),
-			pipe->getNormal(position + 1),
+			pipe->getAxe(posp1),
+			pipe->getNormal(posp1),
 			rotation
 		),
 		(Rotation(pipe->getAxe(position), rotation))(pipe->getNormal(position))
@@ -279,6 +310,9 @@ Transform Utility::modelOnPipe(Pipeline* pipe, const float position, const float
 
 	return model;
 }
+
+
+
 
 Transform Utility::Lookat(const Point& from, const Point& to, const Vector& up) {
 	Vector dir = normalize(Vector(from, to));

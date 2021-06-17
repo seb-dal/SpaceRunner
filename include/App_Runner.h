@@ -52,6 +52,6 @@ public:
 	 * Detect all kind of collsion.
 	 * Used in update.
 	 */
-	void collision();
+	void collision(float time, float delta);
 
 };

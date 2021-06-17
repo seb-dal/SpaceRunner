@@ -45,38 +45,64 @@ public:
 		const float NumPart
 	);
 
+
+
 	/**
 	 * delete part.
 	 */
 	~Pipeline_Part_CMR();
 
+
+
 	/**
 	 * get fragment.
 	 *
-	 * \return
+	 * \return Mesh*
 	 */
 	Mesh* get();
 
+
+	/**
+	 * Get list of Obstacle Object.
+	 *
+	 * \return std::vector<ObstacleObj*>&
+	 */
 	std::vector<ObstacleObj*>& getObstacles();
 
+	/**
+	 * Get list of Bonus Object.
+	 *
+	 * \return std::vector<BonusObj*>&
+	 */
 	std::vector<BonusObj*>& getBonus();
+
+
+
 	/**
 	 * get Points.
+	 *
+	 * \return std::vector<Point>&
 	 */
 	std::vector<Point>& getPoints();
 
+
+
 	/**
 	 * get list normal pipe.
+	 *
+	 * \return std::vector<Vector>&
 	 */
 	std::vector<Vector>& getV();
+
+
 
 	/**
 	 * Generate the colision box.
 	 *
-	 * \param pipe pointer of th pipe
+	 * \param loader MeshLoader
+	 * \param pipe pointer of the pipe
 	 * \param nbColision number of colision box that will be create
-	 * \param pmin
-	 * \param pmax
+	 * \param nbBonus number of Bonus box that will be create
 	 */
 	void genColision(MeshLoader& loader, Pipeline* pipe, unsigned int nbColision, unsigned int nbBonus);
 };

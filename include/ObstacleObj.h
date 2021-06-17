@@ -13,9 +13,9 @@ public:
 	bool getHitted();
 	void hitted();
 private:
-	static const float scale_collsionBoxBonus;
-	static const float scale_CollisionBox;
-	static const float scale_model;
+	static const Transform scale_collsionBoxBonus;
+	static const Transform scale_CollisionBox;
+	static const Transform scale_model;
 
 	//==============================
 	Box Bonus_HitBox;

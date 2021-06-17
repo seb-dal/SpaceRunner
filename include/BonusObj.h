@@ -17,15 +17,13 @@ public:
 
 	/**
 	 * Animate the bonus by rotating it.
-	 *
-	 * \param v vector around which the bonus will rotate
-	 * \param angle angle of rotation
 	 */
-	void Rotate(const Vector& v, const float angle);
+	void Rotate();
 
 private:
-	static const float scale_collsionBoxBonus;
-	static const float scale_model;
+	static const Transform scale_collsionBoxBonus;
+	static const Transform scale_model;
+	static const Transform rotation_Animation;
 
 	//==============================
 	bool taken;

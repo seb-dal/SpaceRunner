@@ -2,6 +2,7 @@
 
 const float Pipeline_Part_CMR::NB_POINTS = 100;
 
+
 Pipeline_Part_CMR::Pipeline_Part_CMR(
 	const Point* prevPrev, const Point* prev, const Point* start, const Point* end, const Point* after,
 	const Vector& v, const float sizePipe, const unsigned int N, std::vector<Color>& mats, const float NumPart
@@ -11,17 +12,19 @@ Pipeline_Part_CMR::Pipeline_Part_CMR(
 	this->end = end;
 	this->after = after;
 
+	float NB_POINTS_FLOAT = NB_POINTS;
 	// create all points
 	listPoints = std::vector<Point>(NB_POINTS + 2);
 
 	listPoints[0] = (
-		Point(Utility::CatMullRom(*prevPrev, *prev, *start, *end, (float)(NB_POINTS - 1) / (float)NB_POINTS))
+		Point(Utility::CatMullRom(*prevPrev, *prev, *start, *end, (NB_POINTS_FLOAT - 1.f) / NB_POINTS_FLOAT))
 		+ Point(Utility::CatMullRom(*prev, *start, *end, *after, 0))
 		) / 2;
 
 	//#pragma omp parallel for
-	for (int i = 1; i < listPoints.size(); i++) {
-		listPoints[i] = Point(Utility::CatMullRom(*prev, *start, *end, *after, (float)(i - 1) / (float)NB_POINTS));
+	int i;
+	for (i = 1; i < listPoints.size(); i++) {
+		listPoints[i] = Point(Utility::CatMullRom(*prev, *start, *end, *after, (float)(i - 1) / NB_POINTS_FLOAT));
 	}
 
 	//std::cout << Point(Utility::CatMullRom(Vector(*prevPrev), Vector(*prev), Vector(*start), Vector(*end), 1)) << " " << Point(Utility::CatMullRom(Vector(*prev), Vector(*start), Vector(*end), Vector(*after), 0)) << std::endl;
@@ -31,9 +34,9 @@ Pipeline_Part_CMR::Pipeline_Part_CMR(
 	// build circules Pipe 
 	PipeBuilder builder = PipeBuilder(N);
 	builder.allocCircule(listPoints.size());
-
+	size_t size;
 	//#pragma omp parallel for
-	for (int i = 0; i < listPoints.size() - 1; i++) {
+	for (i = 0; i < listPoints.size() - 1; i++) {
 		builder.addCircule(
 			i,
 			listPoints[i],
@@ -45,26 +48,23 @@ Pipeline_Part_CMR::Pipeline_Part_CMR(
 			this->v[i]
 		);
 	}
+
+
+	size = listPoints.size() - 1;
 	builder.addCircule(
-		listPoints.size() - 1,
-		listPoints[listPoints.size() - 1],
+		size,
+		listPoints[size],
 		sizePipe,
 		Utility::getVector(
-			listPoints[listPoints.size() - 2],
-			listPoints[listPoints.size() - 1]
+			listPoints[size - 1],
+			listPoints[size]
 		),
-		this->v[listPoints.size() - 1]
+		this->v[size]
 	);
 
 	// draw mesh
-	if (true) {
-		fragment = new Mesh(GL_TRIANGLES);
-		builder.drawPipe(*fragment, mats);
-	}
-	else {
-		fragment = new Mesh(GL_LINE);
-		Utility::drawLineWithVec(*fragment, listPoints, this->v);
-	}
+	fragment = new Mesh(GL_TRIANGLES);
+	builder.drawPipe(*fragment, mats);
 }
 
 
@@ -100,14 +100,16 @@ std::vector<Vector>& Pipeline_Part_CMR::getV() { return v; }
 
 
 void Pipeline_Part_CMR::genColision(MeshLoader& loader, Pipeline* pipe, unsigned int nbColision, unsigned int nbBonus) {
+	unsigned int i;
+	float pp, a, p;
 	if (nbColision > 0) {
 
-		float pp = (NB_POINTS - 4) / ((float)(nbColision));
+		pp = (NB_POINTS - 4) / ((float)(nbColision));
 		//list_Obstacle = std::vector<ObstacleObj*>(nbColision);
 
-		for (int i = 0; i < nbColision; i++) {
-			float a = Utility::randf(0, 360);
-			float p = Utility::randf(pp * i, pp * (i + 1));
+		for (i = 0; i < nbColision; i++) {
+			a = Utility::randf(0, 360);
+			p = Utility::randf(pp * i, pp * (i + 1));
 
 			Transform T = Utility::modelOnPipe(
 				pipe,
@@ -121,12 +123,12 @@ void Pipeline_Part_CMR::genColision(MeshLoader& loader, Pipeline* pipe, unsigned
 		}
 	}
 	if (nbBonus > 0) {
-		float pp = (NB_POINTS - 4) / ((float)(nbBonus));
+		pp = (NB_POINTS - 4) / ((float)(nbBonus));
 		//list_Bonus = std::vector<BonusObj*>(nbBonus);
 
-		for (int i = 0; i < nbBonus; i++) {
-			float a = Utility::randf(0, 360);
-			float p = Utility::randf(pp * i, pp * (i + 1));
+		for (i = 0; i < nbBonus; i++) {
+			a = Utility::randf(0, 360);
+			p = Utility::randf(pp * i, pp * (i + 1));
 
 			Transform T = Utility::modelOnPipe(
 				pipe,

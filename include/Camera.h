@@ -21,7 +21,7 @@ protected:
 	}
 
 public:
-	Camera() {}
+	Camera() :fov(45), height(720), width(1280), znear(0.1), zfar(10) {}
 
 	/**
 	 * Création d'une camera simple.
