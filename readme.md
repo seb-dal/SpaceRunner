@@ -15,7 +15,7 @@ Use your IDE to compile the project.
 ## Play
 - use 'q' or left keys to rotate to the left and 'd' or right keys to rotate to th right.  
 - you start with 3 health points and you loss one each time you touch one of the Red Obstacle.  
-- you can gain new Health points up to 5 Health points by collecting 100 bonus Box.  
+- you can gain new Health points (up to 5 Health points Max) by collecting 100 bonus Box.  
 - the Goal is to have the hightest score possible.  
     * `1` point per ms alive.  
     * `250` points for collecting 1 Bonus Box.  
