@@ -8,7 +8,6 @@
 Put the runner directory into gkit2light directory.  
 Then:   
  - add `include "runner"` into premake4.lua of gkit2light and then use premake.  
- - or use premake directly on premake4.lua in the runner project files.  
    
 Use your IDE to compile the project.  
 
